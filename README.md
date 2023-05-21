@@ -1,6 +1,8 @@
 # Pre-ChatGPT
 一款利用充分利用ChatGPT的插件
 
+油猴直达链接:https://greasyfork.org/en/scripts/466781-pre-chatgpt
+
 ### 目前实现的功能
 - 通过换行分隔提交prompt
 - 无人值守GPT
