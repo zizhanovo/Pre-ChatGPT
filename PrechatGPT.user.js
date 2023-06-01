@@ -347,31 +347,31 @@
     </section>
     
   `;
-  document.body.appendChild(settingSidebar);  // 将设置侧边栏添加到 DOM 中
+    document.body.appendChild(settingSidebar);  // 将设置侧边栏添加到 DOM 中
   }
 
   // 主侧边栏和设置侧边栏的创建代码
   createMainSidebar();
   createSettingSidebar();
 
-  document.getElementById('openSetting').addEventListener('click', function() {
+  document.getElementById('openSetting').addEventListener('click', function () {
     // 隐藏主侧边栏
     document.getElementById('sidebar').style.display = 'none';
-    
+
     // 显示设置侧边栏
     document.getElementById('settingSidebar').style.display = '';
-    
+
     // 从本地存储加载设置
     const splitChar = localStorage.getItem('splitChar');
     const additional = localStorage.getItem('additional');
     const runMode = localStorage.getItem('runMode');
     const delayTime = localStorage.getItem('delayTime');
-    
+
     // 更新设置侧边栏中的字段
     document.getElementById('splitCharInput').value = splitChar || '';
     document.getElementById('additionalInput').value = additional || '';
     document.getElementById('delayTime').value = delayTime || '';
-    
+
     if (runMode === 'instant') {
       document.getElementById('instant').checked = true;
     } else if (runMode === 'delayed') {
@@ -379,27 +379,27 @@
     }
   });
 
-  document.getElementById('backToMainSidebar').addEventListener('click', function() {
+  document.getElementById('backToMainSidebar').addEventListener('click', function () {
     // 获取设置侧边栏中的字段值
     const splitChar = document.getElementById('splitCharInput').value;
     const additional = document.getElementById('additionalInput').value;
     const runMode = document.querySelector('input[name="mode"]:checked').value;
     const delayTime = document.getElementById('delayTime').value;
-    
+
     // 保存设置到本地存储
     localStorage.setItem('splitChar', splitChar);
     localStorage.setItem('additional', additional);
     localStorage.setItem('runMode', runMode);
     localStorage.setItem('delayTime', delayTime);
-    
+
     // 隐藏设置侧边栏
     document.getElementById('settingSidebar').style.display = 'none';
-    
+
     // 显示主侧边栏
     document.getElementById('sidebar').style.display = '';
   });
-  
-  
+
+
 
   // Toggle logic
   document.getElementById('toggleSidebar').addEventListener('click', function () {
@@ -417,6 +417,8 @@
   });
 
   //以下是逻辑函数
+
+
 
   (function () {
     const questionList = document.getElementById('questionList');
@@ -455,7 +457,9 @@
 
     // Helper functions
     function getQuestionsFromInput() {
-      return questionInput.value.split('\n').filter(question => question.trim() !== '');
+      // 从本地存储获取拆分符号，如果没有设置，就使用默认的符号
+      const splitChar = localStorage.getItem('splitChar') || '\n';
+      return questionInput.value.split(splitChar).filter(question => question.trim() !== '');
     }
 
     function addQuestionToList(question, answered) {
@@ -632,15 +636,21 @@
         // Find the input box and the send button
         const inputBox = document.querySelector('textarea');
         const sendButton = inputBox.nextElementSibling;
-
-        // Input the question
-        inputBox.value = question;
+    
+        // 从本地存储获取输出增强的内容
+        const additional = localStorage.getItem('additional') || '';
+        
+        // 将问题和输出增强的内容拼接
+        const questionToSend = `${question} ${additional}`.trim();
+    
+        // Input the enhanced question
+        inputBox.value = questionToSend;
         const event = new Event('input', { bubbles: true });
         inputBox.dispatchEvent(event);
-
+    
         // Click the send button after a short delay
         setTimeout(() => sendButton.click(), 500);
-
+    
         // Create a MutationObserver to wait for the answer
         const observer = new MutationObserver((mutations, observer) => {
           for (let mutation of mutations) {
@@ -649,7 +659,7 @@
                 if (node.nodeType === Node.ELEMENT_NODE && node.textContent.includes('Regenerate response')) {
                   // The answer has finished generating, stop observing
                   observer.disconnect();
-
+    
                   // Check if the "Continue generating" button is present
                   const continueButton = document.querySelector('form.stretch .justify-center polygon[points="11 19 2 12 11 5 11 19"]');
                   if (continueButton) {
@@ -665,11 +675,12 @@
             }
           }
         });
-
+    
         const observerConfig = { childList: true, subtree: true };
         observer.observe(document.body, observerConfig);
       });
     }
+    
 
   })();
 
