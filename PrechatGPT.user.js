@@ -239,7 +239,6 @@
       border-bottom: 1px solid #ccc;
       margin-bottom: 10px;
     }
-
     .input-row {
       margin-bottom: 10px;
     }
@@ -248,6 +247,7 @@
       display: block;
       margin-bottom: 5px;
       color: #333;
+      font-weight: bold;
     }
 
     .input-row input[type="text"],
@@ -257,6 +257,8 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       transition: border-color 0.3s;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
     }
 
     .input-row input[type="text"]:focus,
@@ -271,7 +273,7 @@
     }
 
     #runMode input[type="radio"] {
-      margin-right: 5px;
+      margin-right: 10px;
     }
 
     #delayTime {
@@ -281,12 +283,42 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       transition: border-color 0.3s;
+      width: 100px; /* 调整宽度为适当大小 */
+      text-align: right; /* 将文本右对齐 */
     }
 
     #delayTime:disabled {
       background-color: #f0f0f0;
     }
 
+  
+    .clear-cache-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #88c0d0;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+      box-shadow: 0px 5px 10px rgba(0,0,0,0.2);
+    }
+    
+    .clear-cache-btn:active {
+        box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+        transform: translateY(3px);
+    }
+    
+    .clear-cache-btn:hover {
+        background-color: #81a1c1;
+    }
+    .button-container1 {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 30px;
+    }
   `);
   // 创建主侧边栏
   function createMainSidebar() {
@@ -344,10 +376,16 @@
           <input type="number" id="delayTime" placeholder="432000" disabled>
         </div>
       </div>
+      <div class="button-container1">
+        <button class="clear-cache-btn" onclick="clearCache()">清空缓存</button>
+       </div>
     </section>
     
   `;
     document.body.appendChild(settingSidebar);  // 将设置侧边栏添加到 DOM 中
+    const clearCacheBtn = document.querySelector('.clear-cache-btn');
+    clearCacheBtn.addEventListener('click', clearCache);
+
   }
 
   // 主侧边栏和设置侧边栏的创建代码
@@ -399,6 +437,38 @@
     document.getElementById('sidebar').style.display = '';
   });
 
+  // Event listener for run mode radio button inputs
+  const delayedRadio = document.getElementById('delayed');
+  const delayTimeInput = document.getElementById('delayTime');
+
+  delayedRadio.addEventListener('change', function () {
+    delayTimeInput.disabled = false;
+  });
+
+  const instantRadio = document.getElementById('instant');
+  instantRadio.addEventListener('change', function () {
+    delayTimeInput.disabled = true;
+  });
+
+  function clearCache() {
+    var btn = document.querySelector('.clear-cache-btn');
+    if (typeof (Storage) !== "undefined") {
+      if (confirm("你确定要清空所有缓存吗？")) {
+        try {
+          localStorage.clear();
+          console.log("缓存已清空!");
+          btn.innerText = "缓存已清空";
+          setTimeout(function () {
+            btn.innerText = "清空缓存";
+          }, 3000);  // 3秒后恢复原状
+        } catch (e) {
+          console.log("清空缓存失败，错误信息: ", e);
+        }
+      }
+    } else {
+      alert("抱歉，你的浏览器不支持 Web Storage...");
+    }
+  }
 
 
   // Toggle logic
@@ -416,9 +486,6 @@
     }
   });
 
-  //以下是逻辑函数
-
-
 
   (function () {
     const questionList = document.getElementById('questionList');
@@ -431,6 +498,8 @@
     questionList.addEventListener('click', handleQuestionClick);
     window.addEventListener('load', loadQuestionsFromLocalStorage);
     startButton.addEventListener('click', startAskingQuestions);
+
+
 
     // Event handlers
     function handleQuestionSubmission() {
@@ -557,6 +626,7 @@
           localStorage.setItem('questions', JSON.stringify(storedQuestions));
         }
       }
+
     }
 
 
@@ -575,6 +645,7 @@
       storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
       storedQuestions = storedQuestions.filter(q => q.text !== questionText.value);
       localStorage.setItem('questions', JSON.stringify(storedQuestions));
+
     }
 
     function clearInput() {
@@ -609,17 +680,121 @@
 
 
     async function startAskingQuestions() {
-      const questions = document.getElementsByClassName('question');
+      const questions = Array.from(document.getElementsByClassName('question'));
+      const runMode = localStorage.getItem('runMode');
+      const delayTime = parseInt(localStorage.getItem('delayTime') || '300');
+
       for (let i = 0; i < questions.length; i++) {
-        let questionDiv = questions[i];
-        let questionInput = questionDiv.querySelector('input.question-text'); // Get the input element
+        const questionDiv = questions[i];
+        const questionInput = questionDiv.querySelector('input.question-text');
+
         if (!questionDiv.classList.contains('answered')) {
-          await askQuestion(questionInput.value);
+          if (runMode === 'instant') {
+            await askQuestionInstant(questionInput.value);
+          } else if (runMode === 'delayed') {
+            await delay(delayTime);
+            await askQuestionDelayed(questionInput.value);
+          }
+
           questionDiv.classList.add('answered');
           updateQuestionInLocalStorage(questionInput.value, true);
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before starting the next question
         }
       }
+    }
+
+    async function askQuestionInstant(question) {
+      return new Promise((resolve, reject) => {
+        const additional = localStorage.getItem('additional') || '';
+
+        const questionToSend = `${question} ${additional}`.trim();
+
+        const inputBox = document.querySelector('textarea');
+        inputBox.value = questionToSend;
+        const event = new Event('input', { bubbles: true });
+        inputBox.dispatchEvent(event);
+
+        const sendButton = inputBox.nextElementSibling;
+        setTimeout(() => {
+          sendButton.click();
+        }, 500);
+
+        const observer = new MutationObserver((mutations, observer) => {
+          for (let mutation of mutations) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+              for (let node of mutation.addedNodes) {
+                if (node.nodeType === Node.ELEMENT_NODE && node.textContent.includes('Regenerate response')) {
+                  observer.disconnect();
+                  resolve();
+                  return;
+                }
+              }
+            }
+          }
+        });
+
+        const observerConfig = { childList: true, subtree: true };
+        observer.observe(document.body, observerConfig);
+      });
+    }
+
+    async function askQuestionDelayed(question) {
+      if (!question) {
+        console.error('No question provided');
+        return;
+      }
+
+      const additional = localStorage.getItem('additional') || '';
+      const delayTime = parseInt(localStorage.getItem('delayTime'), 10);
+      if (isNaN(delayTime)) {
+        console.error('Invalid delayTime');
+        return;
+      }
+      const questionToSend = `${question} ${additional}`.trim();
+
+      const inputBox = document.querySelector('textarea');
+      if (!inputBox) {
+        console.error('Input box not found');
+        return;
+      }
+      inputBox.value = questionToSend;
+      const event = new Event('input', { bubbles: true });
+      inputBox.dispatchEvent(event);
+
+      const sendButton = inputBox.nextElementSibling;
+      if (!sendButton) {
+        console.error('Send button not found');
+        return;
+      }
+      setTimeout(() => {
+        sendButton.click();
+      }, 500);
+
+      const answerGenerated = new Promise((resolve, reject) => {
+        const observer = new MutationObserver((mutations, observer) => {
+          for (let mutation of mutations) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+              for (let node of mutation.addedNodes) {
+                if (node.nodeType === Node.ELEMENT_NODE && node.textContent.includes('Regenerate response')) {
+                  observer.disconnect();
+                  resolve();
+                  return;
+                }
+              }
+            }
+          }
+        });
+
+        const observerConfig = { childList: true, subtree: true };
+        observer.observe(document.body, observerConfig);
+      });
+
+      const timerExpired = new Promise((resolve, reject) => {
+        setTimeout(resolve, delayTime);
+      });
+
+      return Promise.all([answerGenerated, timerExpired]).catch((error) => {
+        console.error('Error in askQuestionDelayed:', error);
+      });
     }
 
     function updateQuestionInLocalStorage(questionText, answered) {
@@ -631,60 +806,12 @@
       }
     }
 
-    async function askQuestion(question) {
+    function delay(ms) {
       return new Promise((resolve, reject) => {
-        // Find the input box and the send button
-        const inputBox = document.querySelector('textarea');
-        const sendButton = inputBox.nextElementSibling;
-    
-        // 从本地存储获取输出增强的内容
-        const additional = localStorage.getItem('additional') || '';
-        
-        // 将问题和输出增强的内容拼接
-        const questionToSend = `${question} ${additional}`.trim();
-    
-        // Input the enhanced question
-        inputBox.value = questionToSend;
-        const event = new Event('input', { bubbles: true });
-        inputBox.dispatchEvent(event);
-    
-        // Click the send button after a short delay
-        setTimeout(() => sendButton.click(), 500);
-    
-        // Create a MutationObserver to wait for the answer
-        const observer = new MutationObserver((mutations, observer) => {
-          for (let mutation of mutations) {
-            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-              for (let node of mutation.addedNodes) {
-                if (node.nodeType === Node.ELEMENT_NODE && node.textContent.includes('Regenerate response')) {
-                  // The answer has finished generating, stop observing
-                  observer.disconnect();
-    
-                  // Check if the "Continue generating" button is present
-                  const continueButton = document.querySelector('form.stretch .justify-center polygon[points="11 19 2 12 11 5 11 19"]');
-                  if (continueButton) {
-                    // If the "Continue generating" button is present, click it and continue waiting
-                    continueButton.parentElement.click();
-                  } else {
-                    // If the "Continue generating" button is not present, resolve the promise
-                    resolve();
-                  }
-                  return;
-                }
-              }
-            }
-          }
-        });
-    
-        const observerConfig = { childList: true, subtree: true };
-        observer.observe(document.body, observerConfig);
+        setTimeout(resolve, ms);
       });
     }
-    
-
   })();
-
-
 })();
 
 
