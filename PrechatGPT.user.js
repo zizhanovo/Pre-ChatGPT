@@ -1,9 +1,11 @@
 // ==UserScript==
-// @name         Pre ChatGPT
-// @namespace    http://tampermonkey.net/
-// @version      1.1
-// @description  Handle multiple questions for ChatGPT
-// @author       Your Name
+// @name         PreChatGPT
+// @description  自动化批量的提交ChatGPT的提问
+// @version      1.2
+// @author       zizhanovo
+// @namespace    https://github.com/zizhanovo/Pre-ChatGPT
+// @supportURL   https://github.com/xcanwin/KeepChatGPT/
+// @license      GPL-2.0-only
 // @match        https://chat.openai.com/*
 // @grant        GM_addStyle
 // ==/UserScript==
