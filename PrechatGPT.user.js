@@ -736,64 +736,39 @@
         observer.observe(document.body, observerConfig);
       });
     }
-
-    async function askQuestionDelayed(question) {
-      if (!question) {
-        console.error('No question provided');
-        return;
-      }
-
-      const additional = localStorage.getItem('additional') || '';
-      const delayTime = parseInt(localStorage.getItem('delayTime'), 10);
-      if (isNaN(delayTime)) {
-        console.error('Invalid delayTime');
-        return;
-      }
-      const questionToSend = `${question} ${additional}`.trim();
-
-      const inputBox = document.querySelector('textarea');
-      if (!inputBox) {
-        console.error('Input box not found');
-        return;
-      }
-      inputBox.value = questionToSend;
-      const event = new Event('input', { bubbles: true });
-      inputBox.dispatchEvent(event);
-
-      const sendButton = inputBox.nextElementSibling;
-      if (!sendButton) {
-        console.error('Send button not found');
-        return;
-      }
-      setTimeout(() => {
-        sendButton.click();
-      }, 500);
-
-      const answerGenerated = new Promise((resolve, reject) => {
-        const observer = new MutationObserver((mutations, observer) => {
-          for (let mutation of mutations) {
-            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-              for (let node of mutation.addedNodes) {
-                if (node.nodeType === Node.ELEMENT_NODE && node.textContent.includes('Regenerate response')) {
-                  observer.disconnect();
-                  resolve();
-                  return;
-                }
-              }
-            }
-          }
-        });
-
-        const observerConfig = { childList: true, subtree: true };
-        observer.observe(document.body, observerConfig);
-      });
-
-      const timerExpired = new Promise((resolve, reject) => {
-        setTimeout(resolve, delayTime);
-      });
-
-      return Promise.all([answerGenerated, timerExpired]).catch((error) => {
-        console.error('Error in askQuestionDelayed:', error);
+    function askQuestionDelayed(question) {
+      return new Promise((resolve, reject) => {
+        if (!question) {
+          reject('No question provided');
+          return;
+        }
+    
+        const additional = localStorage.getItem('additional') || '';
+        const delayTime = parseInt(localStorage.getItem('delayTime'), 10);
+        if (isNaN(delayTime)) {
+          reject('Invalid delayTime');
+          return;
+        }
+        const questionToSend = `${question} ${additional}`.trim();
+    
+        const inputBox = document.querySelector('textarea');
+        if (!inputBox) {
+          reject('Input box not found');
+          return;
+        }
+        inputBox.value = questionToSend;
+        const event = new Event('input', { bubbles: true });
+        inputBox.dispatchEvent(event);
+    
+        const sendButton = inputBox.nextElementSibling;
+        if (!sendButton) {
+          reject('Send button not found');
+          return;
+        }
+        setTimeout(() => {
+          sendButton.click();
+          resolve();
+        }, delayTime);
       });
     }
 
