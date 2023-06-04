@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PreChatGPT
 // @description  自动化批量的提交ChatGPT的提问
-// @version      1.2
+// @version      1.3
 // @author       zizhanovo
 // @namespace    https://github.com/zizhanovo/Pre-ChatGPT
 // @supportURL   https://github.com/xcanwin/KeepChatGPT/
@@ -115,23 +115,45 @@
       transition: background-color 0.3s;
     }
 
+    #submitQuestion, #start {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+      box-shadow: 0px 5px 10px rgba(0,0,0,0.2);
+    }
+    
     #submitQuestion {
       background-color: #4CAF50;
     }
-
+    
+    #submitQuestion:active {
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+      transform: translateY(3px);
+    }
+    
     #submitQuestion:hover {
       background-color: #45a049;
     }
-
+    
     #start {
       background-color: #008CBA;
       margin-bottom: 20px;
     }
-
+    
+    #start:active {
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+      transform: translateY(3px);
+    }
+    
     #start:hover {
       background-color: #007B99;
     }
-
+    
     #questionList {
       max-height: 200px;
       overflow-y: auto;
@@ -321,6 +343,125 @@
       align-items: center;
       height: 30px;
     }
+
+    #questionSummary {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.08);
+      transition: all 0.3s ease-in-out;
+      height: 100px; /* 添加此行并设置合适的高度 */
+    }
+    
+    .summary-item {
+      display: flex;
+      justify-content: space-between; 
+      align-items: flex-start;
+      width: 45%;
+      padding: 10px;
+      background-color: #ffffff;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      box-shadow: 0px 0px 5px rgba(0,0,0,0.05);
+      transition: all 0.3s ease-in-out;
+    }
+    
+    .summary-item:hover {
+      box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
+      transform: scale(1.02);
+    }
+    
+    .icon-count-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      width: 50%;
+    }
+    
+    .summary-icon {
+      font-size: 20px;
+      margin-right: 10px;
+      color: #333333;
+    }
+    
+    .summary-count {
+      font-size: 18px;
+      margin-right: 10px;
+      color: #333333;
+    }
+    
+    .button-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 50%;
+      padding: 5px;
+      height: 100%; /* 添加此行 */
+    }
+    
+    .summary-action {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      border: none;
+      color: white;
+      background-color: #1890ff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .summary-action:hover {
+      background-color: #40a9ff;
+    }
+    
+    .vertical-text {
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      font-size: 20px;
+      margin: 0 auto;
+    }
+    #openSetting{
+      font-size: 24px; /* 调整字体大小 */
+      color: #4a4a4a; /* 改变字体颜色 */
+
+      transition: all 0.3s ease; /* 过渡动画 */
+      cursor: pointer; /* 更改鼠标光标样式 */
+    }
+    
+    #openSetting:hover {
+        color: #3b3b3b; /* 鼠标悬停时的颜色 */
+        text-shadow: 2px 2px 4px #888; /* 鼠标悬停时的阴影颜色 */
+    }
+    
+    #openSetting:active {
+        transform: scale(0.97); /* 点击时缩小比例 */
+    }
+    #backToMainSidebar{
+      font-size: 24px; /* 调整字体大小 */
+      color: #4a4a4a; /* 改变字体颜色 */
+
+      transition: all 0.3s ease; /* 过渡动画 */
+      cursor: pointer; /* 更改鼠标光标样式 */
+    }
+    
+    #backToMainSidebar:hover {
+        color: #3b3b3b; /* 鼠标悬停时的颜色 */
+        text-shadow: 2px 2px 4px #888; /* 鼠标悬停时的阴影颜色 */
+    }
+    
+    #backToMainSidebar:active {
+        transform: scale(0.97); /* 点击时缩小比例 */
+    }
+
   `);
   // 创建主侧边栏
   function createMainSidebar() {
@@ -344,6 +485,45 @@
         <button id="start">Start</button>
       </div>
       <ul id="questionList"></ul>
+      <div id="questionSummary" class="question-summary">
+      <div class="summary-item">
+          <div class="icon-count-container">
+              <div class="icon-container">
+                  <span class="summary-icon">✅</span>
+              </div>
+              <div class="count-container">
+                  <span class="summary-count" id="completedCount">0</span>
+              </div>
+          </div>
+          <div class="button-container">
+              <a href="#" class="summary-action" id="deleteCompleted">
+                  <svg t="1685867554988" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2373" width="200" height="200">
+                      <path d="M832 1024H192V288h64v672h512V288h64v736zM128 160h768v64H128z" fill="#2A2A3B" p-id="2374"></path>
+                      <path d="M672 224H352V0h320z m-256-64h192V64h-192zM384 384h64v448h-64zM576 384h64v448h-64z" fill="#2A2A3B" p-id="2375"></path>
+                  </svg>
+              </a>
+          </div>
+      </div>
+      <div class="summary-item">
+          <div class="icon-count-container">
+              <div class="icon-container">
+                  <span class="summary-icon">❓</span>
+              </div>
+              <div class="count-container">
+                  <span class="summary-count" id="pendingCount">0</span>
+              </div>
+          </div>
+          <div class="button-container">
+              <a href="#" class="summary-action" id="deletePending">
+                  <svg t="1685867554988" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2373" width="200" height="200">
+                      <path d="M832 1024H192V288h64v672h512V288h64v736zM128 160h768v64H128z" fill="#2A2A3B" p-id="2374"></path>
+                      <path d="M672 224H352V0h320z m-256-64h192V64h-192zM384 384h64v448h-64zM576 384h64v448h-64z" fill="#2A2A3B" p-id="2375"></path>
+                  </svg>
+              </a>
+          </div>
+      </div>
+    </div>
+    
     </section>
   `;
     document.body.appendChild(sidebar);
@@ -489,6 +669,8 @@
   });
 
 
+
+
   (function () {
     const questionList = document.getElementById('questionList');
     const submitQuestionButton = document.getElementById('submitQuestion');
@@ -501,25 +683,35 @@
     window.addEventListener('load', loadQuestionsFromLocalStorage);
     startButton.addEventListener('click', startAskingQuestions);
 
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+          v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
 
 
-    // Event handlers
     function handleQuestionSubmission() {
       const questions = getQuestionsFromInput();
       for (let question of questions) {
-        addQuestionToList(question);
-        addQuestionToLocalStorage(question);
+        const uuid = generateUUID();  // Generate a unique ID for the question
+        addQuestionToList(question, false, uuid);  // Pass the answered state to addQuestionToList
+        addQuestionToLocalStorage(question, uuid);  // Pass the UUID to addQuestionToLocalStorage
       }
       clearInput();
       makeQuestionListSortable();
+      updateQuestionCounts();
     }
+    
 
-    function addQuestionToLocalStorage(question) {
+    function addQuestionToLocalStorage(question, uuid) {
       let storedQuestions = getQuestionsFromLocalStorage();
-      storedQuestions.push({ text: question, answered: false });
+      storedQuestions.push({ id: uuid, text: question, answered: false });  // Store the answered state with the question
       localStorage.setItem('questions', JSON.stringify(storedQuestions));
+      updateQuestionCounts();
     }
-
+    
     function handleQuestionClick(event) {
       if (event.target.classList.contains('question-text')) {
         toggleQuestionTextWhiteSpace(event.target);
@@ -533,16 +725,17 @@
       return questionInput.value.split(splitChar).filter(question => question.trim() !== '');
     }
 
-    function addQuestionToList(question, answered) {
+    function addQuestionToList(question, answered, uuid) {
       const questionDiv = createQuestionDiv(question, answered);
+      questionDiv.dataset.id = uuid;  // Store the UUID in the DOM element
       questionList.appendChild(questionDiv);
       if (answered) {
         questionDiv.classList.add('answered');
       }
+      updateQuestionCounts();
       return questionDiv;
     }
-
-
+    
     function createQuestionDiv(question, answered) {
       const div = document.createElement('div');
       div.className = 'question';
@@ -573,6 +766,7 @@
       if (answered) {
         div.classList.add('answered');
       }
+
 
       return div;
     }
@@ -636,18 +830,19 @@
     function handleDeleteButtonClick(event) {
       // Use the closest method to get the question div
       const questionDiv = event.target.closest('.question');
-
+    
       const questionText = questionDiv.querySelector('input.question-text');
-
+      const questionUuid = questionDiv.dataset.id;  // Get the UUID from the DOM element
+    
       // Remove the question from the DOM
       questionDiv.remove();
-
+      updateQuestionCounts();
+    
       // Remove the question from localStorage
-      let storedQuestions = localStorage.getItem('questions');
-      storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
-      storedQuestions = storedQuestions.filter(q => q.text !== questionText.value);
+      let storedQuestions = getQuestionsFromLocalStorage();  // We can use this helper function here
+      storedQuestions = storedQuestions.filter(q => q.id !== questionUuid);  // Use the UUID to filter the question
       localStorage.setItem('questions', JSON.stringify(storedQuestions));
-
+      updateQuestionCounts();
     }
 
     function clearInput() {
@@ -668,16 +863,35 @@
     function loadQuestionsFromLocalStorage() {
       const storedQuestions = getQuestionsFromLocalStorage();
       for (let question of storedQuestions) {
-        let questionDiv = addQuestionToList(question.text, question.answered);
+        // pass question id (UUID) to addQuestionToList
+        let questionDiv = addQuestionToList(question.text, question.answered, question.id);
         if (question.answered) {
           questionDiv.classList.add('answered');
         }
       }
+    
+      updateQuestionCounts();  // We can use the helper function here
     }
+
 
     function getQuestionsFromLocalStorage() {
       let storedQuestions = localStorage.getItem('questions');
-      return storedQuestions ? JSON.parse(storedQuestions) : [];
+      storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
+      
+      // Map raw objects from local storage to question objects with custom methods
+      storedQuestions = storedQuestions.map((rawQuestion) => ({
+        id: rawQuestion.id,
+        text: rawQuestion.text,
+        answered: rawQuestion.answered
+      }));
+      
+      return storedQuestions;
+    }
+
+    function updateQuestionCounts() {
+      const counts = getQuestionCounts();
+      document.getElementById('completedCount').textContent = counts.answeredCount;
+      document.getElementById('pendingCount').textContent = counts.unansweredCount;
     }
 
 
@@ -685,11 +899,12 @@
       const questions = Array.from(document.getElementsByClassName('question'));
       const runMode = localStorage.getItem('runMode');
       const delayTime = parseInt(localStorage.getItem('delayTime') || '300');
-
+    
       for (let i = 0; i < questions.length; i++) {
         const questionDiv = questions[i];
         const questionInput = questionDiv.querySelector('input.question-text');
-
+        const questionUUID = questionDiv.getAttribute('data-uuid');  // Get UUID from question div
+    
         if (!questionDiv.classList.contains('answered')) {
           if (runMode === 'instant') {
             await askQuestionInstant(questionInput.value);
@@ -697,11 +912,12 @@
             await delay(delayTime);
             await askQuestionDelayed(questionInput.value);
           }
-
+    
           questionDiv.classList.add('answered');
-          updateQuestionInLocalStorage(questionInput.value, true);
+          updateQuestionInLocalStorage(questionUUID, true);  // Use UUID instead of question text
         }
       }
+      updateQuestionCounts();
     }
 
     async function askQuestionInstant(question) {
@@ -738,13 +954,14 @@
         observer.observe(document.body, observerConfig);
       });
     }
+
     function askQuestionDelayed(question) {
       return new Promise((resolve, reject) => {
         if (!question) {
           reject('No question provided');
           return;
         }
-    
+
         const additional = localStorage.getItem('additional') || '';
         const delayTime = parseInt(localStorage.getItem('delayTime'), 10);
         if (isNaN(delayTime)) {
@@ -752,7 +969,7 @@
           return;
         }
         const questionToSend = `${question} ${additional}`.trim();
-    
+
         const inputBox = document.querySelector('textarea');
         if (!inputBox) {
           reject('Input box not found');
@@ -761,7 +978,7 @@
         inputBox.value = questionToSend;
         const event = new Event('input', { bubbles: true });
         inputBox.dispatchEvent(event);
-    
+
         const sendButton = inputBox.nextElementSibling;
         if (!sendButton) {
           reject('Send button not found');
@@ -774,9 +991,9 @@
       });
     }
 
-    function updateQuestionInLocalStorage(questionText, answered) {
+    function updateQuestionInLocalStorage(questionUUID, answered) {
       let storedQuestions = getQuestionsFromLocalStorage();
-      let questionToUpdate = storedQuestions.find(q => q.text === questionText);
+      let questionToUpdate = storedQuestions.find(q => q.uuid === questionUUID);
       if (questionToUpdate) {
         questionToUpdate.answered = answered;
         localStorage.setItem('questions', JSON.stringify(storedQuestions));
@@ -788,6 +1005,65 @@
         setTimeout(resolve, ms);
       });
     }
+
+    function getQuestionCounts() {
+      let storedQuestions = getQuestionsFromLocalStorage();
+      let answeredCount = 0;
+      let unansweredCount = 0;
+
+      for (let question of storedQuestions) {
+        if (question.answered) {
+          answeredCount++;
+        } else {
+          unansweredCount++;
+        }
+      }
+
+      return {
+        answeredCount,
+        unansweredCount
+      };
+    }
+
+    async function deleteCompletedQuestions() {
+      let questions = document.querySelectorAll('.question.answered');
+    
+      for (let question of questions) {
+        let questionUUID = question.getAttribute('data-uuid');
+        question.remove();
+        await removeFromLocalStorage(questionUUID);
+      }
+    
+      updateQuestionCounts();
+    }
+    
+    async function deletePendingQuestions() {
+      let confirmation = confirm('你确定要删除所有未完成的问题吗？');
+    
+      if (confirmation) {
+        let questions = document.querySelectorAll('.question:not(.answered)');
+    
+        for (let question of questions) {
+          let questionUUID = question.getAttribute('data-uuid');
+          question.remove();
+          await removeFromLocalStorage(questionUUID);
+        }
+      }
+      updateQuestionCounts();
+    }
+
+    async function removeFromLocalStorage(questionUUID) {
+      return new Promise((resolve, reject) => {
+        let storedQuestions = localStorage.getItem('questions');
+        storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
+        storedQuestions = storedQuestions.filter(q => q.uuid !== questionUUID);
+        localStorage.setItem('questions', JSON.stringify(storedQuestions));
+        resolve();
+      });
+    }
+    
+    document.getElementById('deleteCompleted').addEventListener('click', deleteCompletedQuestions);
+    document.getElementById('deletePending').addEventListener('click', deletePendingQuestions);
   })();
 })();
 
