@@ -1122,39 +1122,42 @@
 
     async function deleteCompletedQuestions() {
       let questions = document.querySelectorAll('.question.answered');
-
+    
       for (let question of questions) {
-        let questionUUID = question.getAttribute('data-uuid');
+        let questionUUID = question.dataset.id;
         question.remove();
-        await removeFromLocalStorage(questionUUID);
+        await removeFromLocalStorage(questionUUID)
+          .then(questionUUID => console.log(`Question with UUID ${questionUUID} removed from local storage.`))
+          .catch(error => console.error(`Error removing question from local storage: ${error}`));
       }
-
+    
       updateQuestionCounts();
     }
-
+    
     async function deletePendingQuestions() {
       let confirmation = confirm('你确定要删除所有未完成的问题吗？');
-
+    
       if (confirmation) {
         let questions = document.querySelectorAll('.question:not(.answered)');
-
+    
         for (let question of questions) {
-          let questionUUID = question.getAttribute('data-uuid');
+          let questionUUID = question.dataset.id;
           question.remove();
-          await removeFromLocalStorage(questionUUID);
+          await removeFromLocalStorage(questionUUID)
+            .then(questionUUID => console.log(`Question with UUID ${questionUUID} removed from local storage.`))
+            .catch(error => console.error(`Error removing question from local storage: ${error}`));
         }
       }
-
+    
       updateQuestionCounts();
     }
-
     async function removeFromLocalStorage(questionUUID) {
       return new Promise((resolve, reject) => {
         let storedQuestions = localStorage.getItem('questions');
         storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
         storedQuestions = storedQuestions.filter(q => q.id !== questionUUID);
         localStorage.setItem('questions', JSON.stringify(storedQuestions));
-        resolve();
+        resolve(questionUUID); // 修改此处将questionUUID传递给resolve
       });
     }
 
