@@ -703,15 +703,35 @@
       makeQuestionListSortable();
       updateQuestionCounts();
     }
-    
+
 
     function addQuestionToLocalStorage(question, uuid) {
-      let storedQuestions = getQuestionsFromLocalStorage();
-      storedQuestions.push({ id: uuid, text: question, answered: false });  // Store the answered state with the question
-      localStorage.setItem('questions', JSON.stringify(storedQuestions));
-      updateQuestionCounts();
+      try {
+        // Get the current list of questions from local storage
+        let storedQuestions = getQuestionsFromLocalStorage();
+
+        // Check if getQuestionsFromLocalStorage returned a valid array
+        if (!Array.isArray(storedQuestions)) {
+          console.error('Failed to retrieve questions from local storage.');
+          return;
+        }
+
+        // Add the new question to the list
+        storedQuestions.push({ id: uuid, text: question, answered: false });
+
+        // Store the updated list back to local storage
+        localStorage.setItem('questions', JSON.stringify(storedQuestions));
+
+        // Update question counts
+        updateQuestionCounts();
+
+        console.log(`Question "${question}" with ID "${uuid}" added to local storage.`);
+      } catch (err) {
+        console.error(`Error adding question to local storage: ${err}`);
+      }
     }
-    
+
+
     function handleQuestionClick(event) {
       if (event.target.classList.contains('question-text')) {
         toggleQuestionTextWhiteSpace(event.target);
@@ -735,7 +755,7 @@
       updateQuestionCounts();
       return questionDiv;
     }
-    
+
     function createQuestionDiv(question, answered) {
       const div = document.createElement('div');
       div.className = 'question';
@@ -830,14 +850,14 @@
     function handleDeleteButtonClick(event) {
       // Use the closest method to get the question div
       const questionDiv = event.target.closest('.question');
-    
+
       const questionText = questionDiv.querySelector('input.question-text');
       const questionUuid = questionDiv.dataset.id;  // Get the UUID from the DOM element
-    
+
       // Remove the question from the DOM
       questionDiv.remove();
       updateQuestionCounts();
-    
+
       // Remove the question from localStorage
       let storedQuestions = getQuestionsFromLocalStorage();  // We can use this helper function here
       storedQuestions = storedQuestions.filter(q => q.id !== questionUuid);  // Use the UUID to filter the question
@@ -861,32 +881,41 @@
     }
 
     function loadQuestionsFromLocalStorage() {
-      const storedQuestions = getQuestionsFromLocalStorage();
-      for (let question of storedQuestions) {
-        // pass question id (UUID) to addQuestionToList
-        let questionDiv = addQuestionToList(question.text, question.answered, question.id);
-        if (question.answered) {
-          questionDiv.classList.add('answered');
+      try {
+        const storedQuestions = getQuestionsFromLocalStorage();
+        for (let question of storedQuestions) {
+          let questionDiv = addQuestionToList(question.text, question.answered, question.id);
+          if (question.answered) {
+            questionDiv.classList.add('answered');
+          }
         }
+        updateQuestionCounts();
+        console.log(`Loaded ${storedQuestions.length} questions from local storage.`);
+      } catch (err) {
+        console.error(`Error loading questions from local storage: ${err}`);
       }
-    
-      updateQuestionCounts();  // We can use the helper function here
     }
-
 
     function getQuestionsFromLocalStorage() {
-      let storedQuestions = localStorage.getItem('questions');
-      storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
-      
-      // Map raw objects from local storage to question objects with custom methods
-      storedQuestions = storedQuestions.map((rawQuestion) => ({
-        id: rawQuestion.id,
-        text: rawQuestion.text,
-        answered: rawQuestion.answered
-      }));
-      
-      return storedQuestions;
+      try {
+        let storedQuestions = localStorage.getItem('questions');
+        storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
+
+        // Map raw objects from local storage to question objects with custom methods
+        storedQuestions = storedQuestions.map((rawQuestion) => ({
+          id: rawQuestion.id,
+          text: rawQuestion.text,
+          answered: rawQuestion.answered
+        }));
+
+        console.log(`Retrieved ${storedQuestions.length} questions from local storage.`);
+        return storedQuestions;
+      } catch (err) {
+        console.error(`Error retrieving questions from local storage: ${err}`);
+        return []; // Return an empty array if there was an error
+      }
     }
+
 
     function updateQuestionCounts() {
       const counts = getQuestionCounts();
@@ -896,109 +925,175 @@
 
 
     async function startAskingQuestions() {
-      const questions = Array.from(document.getElementsByClassName('question'));
-      const runMode = localStorage.getItem('runMode');
-      const delayTime = parseInt(localStorage.getItem('delayTime') || '300');
+      try {
+        const questions = Array.from(document.getElementsByClassName('question'));
+        const runMode = localStorage.getItem('runMode');
+        const delayTime = parseInt(localStorage.getItem('delayTime') || '300');
     
-      for (let i = 0; i < questions.length; i++) {
-        const questionDiv = questions[i];
-        const questionInput = questionDiv.querySelector('input.question-text');
-        const questionUUID = questionDiv.getAttribute('data-uuid');  // Get UUID from question div
+        for (let i = 0; i < questions.length; i++) {
+          const questionDiv = questions[i];
+          const questionInput = questionDiv.querySelector('input.question-text');
+          const questionUUID = questionDiv.dataset.id;
     
-        if (!questionDiv.classList.contains('answered')) {
-          if (runMode === 'instant') {
-            await askQuestionInstant(questionInput.value);
-          } else if (runMode === 'delayed') {
-            await delay(delayTime);
-            await askQuestionDelayed(questionInput.value);
+          if (!questionDiv.classList.contains('answered')) {
+            if (runMode === 'instant') {
+              console.log(`Asking question instantly: ${questionInput.value}`);
+              await askQuestionInstant(questionInput.value);
+            } else if (runMode === 'delayed') {
+              console.log(`Delaying for ${delayTime}ms before asking question: ${questionInput.value}`);
+              await delay(delayTime);
+              await askQuestionDelayed(questionInput.value);
+            }
+    
+            questionDiv.classList.add('answered');
+            updateQuestionInLocalStorage(questionUUID, true);  // 更新问题状态为已回答
+            console.log(`Question asked and marked as answered: ${questionInput.value}`);
+            await new Promise(resolve => setTimeout(resolve, 500));
           }
-    
-          questionDiv.classList.add('answered');
-          updateQuestionInLocalStorage(questionUUID, true);  // Use UUID instead of question text
         }
+        await updateQuestionCounts();
+      } catch (err) {
+        console.error(`Error occurred while asking questions: ${err}`);
       }
-      updateQuestionCounts();
     }
+    
 
     async function askQuestionInstant(question) {
       return new Promise((resolve, reject) => {
-        const additional = localStorage.getItem('additional') || '';
+        try {
+          const additional = localStorage.getItem('additional') || '';
 
-        const questionToSend = `${question} ${additional}`.trim();
+          const questionToSend = `${question} ${additional}`.trim();
 
-        const inputBox = document.querySelector('textarea');
-        inputBox.value = questionToSend;
-        const event = new Event('input', { bubbles: true });
-        inputBox.dispatchEvent(event);
+          const inputBox = document.querySelector('textarea');
+          if (!inputBox) {
+            reject('Could not find textarea for input.');
+          }
+          inputBox.value = questionToSend;
+          const event = new Event('input', { bubbles: true });
+          inputBox.dispatchEvent(event);
 
-        const sendButton = inputBox.nextElementSibling;
-        setTimeout(() => {
-          sendButton.click();
-        }, 500);
+          const sendButton = inputBox.nextElementSibling;
+          if (!sendButton) {
+            reject('Could not find send button.');
+          }
+          setTimeout(() => {
+            sendButton.click();
+          }, 500);
 
-        const observer = new MutationObserver((mutations, observer) => {
-          for (let mutation of mutations) {
-            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-              for (let node of mutation.addedNodes) {
-                if (node.nodeType === Node.ELEMENT_NODE && node.textContent.includes('Regenerate response')) {
-                  observer.disconnect();
-                  resolve();
-                  return;
+          const observer = new MutationObserver((mutations, observer) => {
+            for (let mutation of mutations) {
+              if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                for (let node of mutation.addedNodes) {
+                  if (node.nodeType === Node.ELEMENT_NODE && node.textContent.includes('Regenerate response')) {
+                    console.log('Question sent and response generated.');
+                    observer.disconnect();
+                    resolve();
+                    return;
+                  }
                 }
               }
             }
-          }
-        });
+          });
 
-        const observerConfig = { childList: true, subtree: true };
-        observer.observe(document.body, observerConfig);
+          const observerConfig = { childList: true, subtree: true };
+          observer.observe(document.body, observerConfig);
+        } catch (err) {
+          console.error(`Error occurred while asking question: ${err}`);
+          reject(err);
+        }
       });
     }
 
     function askQuestionDelayed(question) {
       return new Promise((resolve, reject) => {
-        if (!question) {
-          reject('No question provided');
-          return;
-        }
+        try {
+          // Check if question is provided
+          if (!question) {
+            console.error("No question provided");
+            reject('No question provided');
+            return;
+          }
 
-        const additional = localStorage.getItem('additional') || '';
-        const delayTime = parseInt(localStorage.getItem('delayTime'), 10);
-        if (isNaN(delayTime)) {
-          reject('Invalid delayTime');
-          return;
-        }
-        const questionToSend = `${question} ${additional}`.trim();
+          // Get additional info and delay time from local storage
+          const additional = localStorage.getItem('additional') || '';
+          const delayTime = parseInt(localStorage.getItem('delayTime'), 10);
 
-        const inputBox = document.querySelector('textarea');
-        if (!inputBox) {
-          reject('Input box not found');
-          return;
-        }
-        inputBox.value = questionToSend;
-        const event = new Event('input', { bubbles: true });
-        inputBox.dispatchEvent(event);
+          // Check if delayTime is a valid number
+          if (isNaN(delayTime)) {
+            console.error("Invalid delayTime");
+            reject('Invalid delayTime');
+            return;
+          }
 
-        const sendButton = inputBox.nextElementSibling;
-        if (!sendButton) {
-          reject('Send button not found');
-          return;
+          const questionToSend = `${question} ${additional}`.trim();
+          const inputBox = document.querySelector('textarea');
+
+          // Check if inputBox is found
+          if (!inputBox) {
+            console.error("Input box not found");
+            reject('Input box not found');
+            return;
+          }
+
+          inputBox.value = questionToSend;
+          const event = new Event('input', { bubbles: true });
+          inputBox.dispatchEvent(event);
+
+          const sendButton = inputBox.nextElementSibling;
+
+          // Check if sendButton is found
+          if (!sendButton) {
+            console.error("Send button not found");
+            reject('Send button not found');
+            return;
+          }
+
+          // Delay for delayTime then click send button and resolve
+          setTimeout(() => {
+            console.log(`Question sent after delay of ${delayTime} ms`);
+            sendButton.click();
+            resolve();
+          }, delayTime);
+        } catch (error) {
+          // Log any error encountered during the process
+          console.error(`Error in askQuestionDelayed: ${error}`);
+          reject(error);
         }
-        setTimeout(() => {
-          sendButton.click();
-          resolve();
-        }, delayTime);
       });
     }
 
     function updateQuestionInLocalStorage(questionUUID, answered) {
-      let storedQuestions = getQuestionsFromLocalStorage();
-      let questionToUpdate = storedQuestions.find(q => q.uuid === questionUUID);
-      if (questionToUpdate) {
+      try {
+        let storedQuestions = getQuestionsFromLocalStorage();
+        let questionToUpdate = storedQuestions.find(q => q.id === questionUUID);
+    
+        // Check if questionToUpdate is found
+        if (!questionToUpdate) {
+          console.error(`Question with UUID ${questionUUID} not found in local storage.`);
+          return false;
+        }
+        
+        console.log('Updating question:', questionToUpdate);
+        
+        // Update the answered status of the question
         questionToUpdate.answered = answered;
+        
+        // Update the question list in local storage
         localStorage.setItem('questions', JSON.stringify(storedQuestions));
+        
+        console.log(`Question with UUID ${questionUUID} updated successfully.`);
+        
+        // Return true on successful update
+        return true;
+      } catch (error) {
+        console.error(`Error in updateQuestionInLocalStorage: ${error}`);
+        return false;
       }
     }
+    
+
+
 
     function delay(ms) {
       return new Promise((resolve, reject) => {
@@ -1027,28 +1122,29 @@
 
     async function deleteCompletedQuestions() {
       let questions = document.querySelectorAll('.question.answered');
-    
+
       for (let question of questions) {
         let questionUUID = question.getAttribute('data-uuid');
         question.remove();
         await removeFromLocalStorage(questionUUID);
       }
-    
+
       updateQuestionCounts();
     }
-    
+
     async function deletePendingQuestions() {
       let confirmation = confirm('你确定要删除所有未完成的问题吗？');
-    
+
       if (confirmation) {
         let questions = document.querySelectorAll('.question:not(.answered)');
-    
+
         for (let question of questions) {
           let questionUUID = question.getAttribute('data-uuid');
           question.remove();
           await removeFromLocalStorage(questionUUID);
         }
       }
+
       updateQuestionCounts();
     }
 
@@ -1056,12 +1152,12 @@
       return new Promise((resolve, reject) => {
         let storedQuestions = localStorage.getItem('questions');
         storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
-        storedQuestions = storedQuestions.filter(q => q.uuid !== questionUUID);
+        storedQuestions = storedQuestions.filter(q => q.id !== questionUUID);
         localStorage.setItem('questions', JSON.stringify(storedQuestions));
         resolve();
       });
     }
-    
+
     document.getElementById('deleteCompleted').addEventListener('click', deleteCompletedQuestions);
     document.getElementById('deletePending').addEventListener('click', deletePendingQuestions);
   })();
