@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PreChatGPT
 // @description  自动化批量的提交ChatGPT的提问
-// @version      1.3
+// @version      1.5
 // @author       zizhanovo
 // @namespace    https://github.com/zizhanovo/Pre-ChatGPT
 // @supportURL   https://github.com/xcanwin/KeepChatGPT/
@@ -154,6 +154,11 @@
       background-color: #007B99;
     }
     
+
+
+
+
+
     #questionList {
       max-height: 200px;
       overflow-y: auto;
@@ -240,6 +245,101 @@
       border: none;
       outline: none;
     }
+
+    #questionSummary {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.08);
+      transition: all 0.3s ease-in-out;
+      height: 90px; /* 添加此行并设置合适的高度 */
+    }
+    
+    .summary-item {
+      display: flex;
+      justify-content: space-between; 
+      align-items: flex-start;
+      width: 45%;
+      padding: 10px;
+      background-color: #ffffff;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      box-shadow: 0px 0px 5px rgba(0,0,0,0.05);
+      transition: all 0.3s ease-in-out;
+    }
+    
+    .summary-item:hover {
+      box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
+      transform: scale(1.02);
+    }
+    
+    .icon-count-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      width: 50%;
+    }
+    
+    .summary-icon {
+      font-size: 18px;
+      margin-right: 10px;
+      color: #333333;
+    }
+    
+    .summary-count {
+      font-size: 18px;
+      margin-right: 10px;
+      color: #333333;
+    }
+    
+    .button-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 50%;
+      padding: 3px;
+      height: 100%; /* 添加此行 */
+    }
+    
+    
+    .summary-action {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      border: 1px solid #e8e8e8;  /* 添加边框 */
+      color: black;  /* 改变按钮文本颜色 */
+      background-color: transparent;  /* 去掉背景颜色 */
+      padding: 5px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .summary-action:hover {
+      background-color: #f0f0f0;  /* 修改hover状态下的背景颜色 */
+    }
+    
+    
+    .vertical-text {
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      font-size: 20px;
+      margin: 0 auto;
+    }
+
+
+
+
+
+
+
     #settingSidebar {
       position: fixed;
       right: 0;
@@ -274,6 +374,7 @@
       font-weight: bold;
     }
 
+
     .input-row input[type="text"],
     .input-row input[type="number"] {
       width: 100%;
@@ -290,12 +391,12 @@
       border-color: #007BFF;
       outline: none;
     }
-
+    
     #runMode {
       display: flex;
-      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
     }
-
     #runMode input[type="radio"] {
       margin-right: 10px;
     }
@@ -314,6 +415,19 @@
     #delayTime:disabled {
       background-color: #f0f0f0;
     }
+    
+    .mode-option {
+      display: flex;
+      align-items: center;
+      background-color: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    
+    .mode-option input[type="number"] {
+      margin-left: 10px;
+    }
+    
 
   
     .clear-cache-btn {
@@ -344,91 +458,6 @@
       height: 30px;
     }
 
-    #questionSummary {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #f5f5f5;
-      border-radius: 10px;
-      box-shadow: 0px 0px 10px rgba(0,0,0,0.08);
-      transition: all 0.3s ease-in-out;
-      height: 100px; /* 添加此行并设置合适的高度 */
-    }
-    
-    .summary-item {
-      display: flex;
-      justify-content: space-between; 
-      align-items: flex-start;
-      width: 45%;
-      padding: 10px;
-      background-color: #ffffff;
-      border: 1px solid #e8e8e8;
-      border-radius: 10px;
-      box-shadow: 0px 0px 5px rgba(0,0,0,0.05);
-      transition: all 0.3s ease-in-out;
-    }
-    
-    .summary-item:hover {
-      box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
-      transform: scale(1.02);
-    }
-    
-    .icon-count-container {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      align-items: center;
-      width: 50%;
-    }
-    
-    .summary-icon {
-      font-size: 20px;
-      margin-right: 10px;
-      color: #333333;
-    }
-    
-    .summary-count {
-      font-size: 18px;
-      margin-right: 10px;
-      color: #333333;
-    }
-    
-    .button-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 50%;
-      padding: 5px;
-      height: 100%; /* 添加此行 */
-    }
-    
-    .summary-action {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-decoration: none;
-      border: none;
-      color: white;
-      background-color: #1890ff;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.3s ease-in-out;
-      width: 100%;
-      height: 100%;
-    }
-    
-    .summary-action:hover {
-      background-color: #40a9ff;
-    }
-    
-    .vertical-text {
-      writing-mode: vertical-rl;
-      text-orientation: upright;
-      font-size: 20px;
-      margin: 0 auto;
-    }
     #openSetting{
       font-size: 24px; /* 调整字体大小 */
       color: #4a4a4a; /* 改变字体颜色 */
@@ -460,6 +489,86 @@
     
     #backToMainSidebar:active {
         transform: scale(0.97); /* 点击时缩小比例 */
+    }
+
+
+    .styled-select {
+      display: block;
+      font-size: 1em;
+      width: 100%;
+      max-width: 600px;
+      box-sizing: border-box;
+      margin: 0;
+    }
+    
+    .dropdown {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+      background-color: #fff;
+      color: #444;
+      padding: .5em .75em;
+    }
+    .input-flex {
+      display: flex;
+      align-items: center;
+    }
+    
+    .input-flex label {
+      margin-right: 10px;
+    }
+
+    .input-row {
+      background-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+  
+    /* 调整边框和间距 */
+    .input-row label {
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: bold;
+    }
+  
+    /* 调整字体颜色和大小 */
+    .input-row input[type="text"],
+    .input-row input[type="number"],
+    .input-row select {
+      color: #333;
+      font-size: 14px;
+    }
+  
+    .input-row select {
+      padding: 8px;
+    }
+  
+    /* 调整按钮样式 */
+    .button-container1 button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #88c0d0;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+      box-shadow: 0px 5px 10px rgba(0,0,0,0.2);
+    }
+  
+    .button-container1 button:active {
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+      transform: translateY(3px);
+    }
+  
+    .button-container1 button:hover {
+      background-color: #81a1c1;
     }
 
   `);
@@ -540,34 +649,130 @@
     settingSidebar.innerHTML = `
     <section id="sidebarContent">
       <h2 id="backToMainSidebar" style="cursor: pointer;">Pre ChatGPT</h2>
+    
       <div class="input-row">
         <label for="splitCharInput">拆分符号:</label>
         <input type="text" id="splitCharInput" placeholder="输入你的分隔符" />
       </div>
+    
       <div class="input-row">
         <label for="additionalInput">输出增强:</label>
-        <input type="text" id="additionalInput" placeholder="例如，详细点" />
+      
+        <div class="styled-select">
+          <div class="input-flex">
+            <label for="depthSelect">深度：</label>
+            <select id="depthSelect" class="dropdown" onchange="saveDropdownSettings()">
+              <option value="">请选择</option>
+              <option value="小学（1-6 年级）">小学（1-6 年级）</option>
+              <option value="初中（7-9 年级）">初中（7-9 年级）</option>
+              <option value="高中（10-12 年级）">高中（10-12 年级）</option>
+              <option value="大学预科">大学预科</option>
+              <option value="本科">本科</option>
+              <option value="研究生">研究生</option>
+              <option value="硕士">硕士</option>
+              <option value="博士候选人">博士候选人</option>
+              <option value="博士后">博士后</option>
+              <option value="博士.D">博士.D</option>
+            </select>
+          </div>
+    
+          <div class="input-flex">
+            <label for="inferenceSelect">推理：</label>
+            <select id="inferenceSelect" class="dropdown" onchange="saveDropdownSettings()">
+              <option value="">请选择</option>
+              <option value="演绎法">演绎法</option>
+              <option value="归纳法">归纳法</option>
+              <option value="溯因法">溯因法</option>
+              <option value="类比法">类比法</option>
+              <option value="随意法">随意法</option>
+            </select>
+          </div>
+    
+          <div class="input-flex">
+            <label for="styleSelect">风格：</label>
+            <select id="styleSelect" class="dropdown" onchange="saveDropdownSettings()">
+              <option value="">请选择</option>
+              <option value="辩论">辩论</option>
+              <option value="鼓励">鼓励</option>
+              <option value="中立">中立</option>
+              <option value="信息丰富">信息丰富</option>
+              <option value="友好">友好</option>
+            </select>
+          </div>
+    
+          <input type="text" id="additionalInput" placeholder="例如，详细点" />
+        </div>
       </div>
+
       <div class="input-row">
-        <label for="runMode">运行模式:</label>
-        <div id="runMode">
+      <label for="runMode">运行模式:</label>
+      <div id="runMode">
+        <div class="mode-option">
           <input type="radio" id="instant" name="mode" value="instant" checked>
           <label for="instant">即时</label>
+        </div>
+        <div class="mode-option">
           <input type="radio" id="delayed" name="mode" value="delayed">
           <label for="delayed">延时</label>
           <input type="number" id="delayTime" placeholder="432000" disabled>
         </div>
       </div>
-      <div class="button-container1">
-        <button class="clear-cache-btn" onclick="clearCache()">清空缓存</button>
-       </div>
-    </section>
+    </div>
     
-  `;
+
+  
+      <div class="button-container1">
+        <button class="clear-cache-btn">清空缓存</button>
+      </div>
+    </section>
+    `;
+
     document.body.appendChild(settingSidebar);  // 将设置侧边栏添加到 DOM 中
+    // 在创建设置侧边栏的代码后添加以下代码
+    document.getElementById('depthSelect').addEventListener('change', saveDropdownSettings);
+    document.getElementById('inferenceSelect').addEventListener('change', saveDropdownSettings);
+    document.getElementById('styleSelect').addEventListener('change', saveDropdownSettings);
+
     const clearCacheBtn = document.querySelector('.clear-cache-btn');
     clearCacheBtn.addEventListener('click', clearCache);
 
+  }
+
+
+  function loadDropdownSettings() {
+    const depthSelect = document.getElementById('depthSelect');
+    const inferenceSelect = document.getElementById('inferenceSelect');
+    const styleSelect = document.getElementById('styleSelect');
+
+    const savedDepth = localStorage.getItem('selectedDepth');
+    const savedInference = localStorage.getItem('selectedInference');
+    const savedStyle = localStorage.getItem('selectedStyle');
+
+    if (savedDepth) {
+      depthSelect.value = savedDepth;
+    }
+
+    if (savedInference) {
+      inferenceSelect.value = savedInference;
+    }
+
+    if (savedStyle) {
+      styleSelect.value = savedStyle;
+    }
+  }
+
+  function saveDropdownSettings() {
+    const depthSelect = document.getElementById('depthSelect');
+    const inferenceSelect = document.getElementById('inferenceSelect');
+    const styleSelect = document.getElementById('styleSelect');
+
+    const selectedDepth = depthSelect.value;
+    const selectedInference = inferenceSelect.value;
+    const selectedStyle = styleSelect.value;
+
+    localStorage.setItem('selectedDepth', selectedDepth);
+    localStorage.setItem('selectedInference', selectedInference);
+    localStorage.setItem('selectedStyle', selectedStyle);
   }
 
   // 主侧边栏和设置侧边栏的创建代码
@@ -580,6 +785,9 @@
 
     // 显示设置侧边栏
     document.getElementById('settingSidebar').style.display = '';
+
+    // 加载下拉框设置
+    loadDropdownSettings();
 
     // 从本地存储加载设置
     const splitChar = localStorage.getItem('splitChar');
@@ -667,6 +875,11 @@
       iconCollapse.style.display = '';
     }
   });
+
+
+
+
+
 
 
 
@@ -936,18 +1149,32 @@
           const questionUUID = questionDiv.dataset.id;
     
           if (!questionDiv.classList.contains('answered')) {
+            let questionText = questionInput.value; // 保存问题文本
+    
+            // 获取下拉框的值
+            const depthSelect = document.getElementById('depthSelect');
+            const inferenceSelect = document.getElementById('inferenceSelect');
+            const styleSelect = document.getElementById('styleSelect');
+    
+            const selectedDepth = depthSelect.options[depthSelect.selectedIndex].text; // 获取选中的文本
+            const selectedInference = inferenceSelect.options[inferenceSelect.selectedIndex].text; // 获取选中的文本
+            const selectedStyle = styleSelect.options[styleSelect.selectedIndex].text; // 获取选中的文本
+    
+            // 将下拉框的值拼接到问题文本中
+            questionText += ` 回答深度: ${selectedDepth}, 推理框架: ${selectedInference}, 回答风格: ${selectedStyle}`;
+    
             if (runMode === 'instant') {
-              console.log(`Asking question instantly: ${questionInput.value}`);
-              await askQuestionInstant(questionInput.value);
+              console.log(`Asking question instantly: ${questionText}`);
+              await askQuestionInstant(questionText);
             } else if (runMode === 'delayed') {
-              console.log(`Delaying for ${delayTime}ms before asking question: ${questionInput.value}`);
+              console.log(`Delaying for ${delayTime}ms before asking question: ${questionText}`);
               await delay(delayTime);
-              await askQuestionDelayed(questionInput.value);
+              await askQuestionDelayed(questionText);
             }
     
             questionDiv.classList.add('answered');
             updateQuestionInLocalStorage(questionUUID, true);  // 更新问题状态为已回答
-            console.log(`Question asked and marked as answered: ${questionInput.value}`);
+            console.log(`Question asked and marked as answered: ${questionText}`);
             await new Promise(resolve => setTimeout(resolve, 500));
           }
         }
@@ -957,6 +1184,7 @@
       }
     }
     
+
 
     async function askQuestionInstant(question) {
       return new Promise((resolve, reject) => {
@@ -1067,23 +1295,23 @@
       try {
         let storedQuestions = getQuestionsFromLocalStorage();
         let questionToUpdate = storedQuestions.find(q => q.id === questionUUID);
-    
+
         // Check if questionToUpdate is found
         if (!questionToUpdate) {
           console.error(`Question with UUID ${questionUUID} not found in local storage.`);
           return false;
         }
-        
+
         console.log('Updating question:', questionToUpdate);
-        
+
         // Update the answered status of the question
         questionToUpdate.answered = answered;
-        
+
         // Update the question list in local storage
         localStorage.setItem('questions', JSON.stringify(storedQuestions));
-        
+
         console.log(`Question with UUID ${questionUUID} updated successfully.`);
-        
+
         // Return true on successful update
         return true;
       } catch (error) {
@@ -1091,7 +1319,7 @@
         return false;
       }
     }
-    
+
 
 
 
@@ -1122,7 +1350,7 @@
 
     async function deleteCompletedQuestions() {
       let questions = document.querySelectorAll('.question.answered');
-    
+
       for (let question of questions) {
         let questionUUID = question.dataset.id;
         question.remove();
@@ -1130,16 +1358,16 @@
           .then(questionUUID => console.log(`Question with UUID ${questionUUID} removed from local storage.`))
           .catch(error => console.error(`Error removing question from local storage: ${error}`));
       }
-    
+
       updateQuestionCounts();
     }
-    
+
     async function deletePendingQuestions() {
       let confirmation = confirm('你确定要删除所有未完成的问题吗？');
-    
+
       if (confirmation) {
         let questions = document.querySelectorAll('.question:not(.answered)');
-    
+
         for (let question of questions) {
           let questionUUID = question.dataset.id;
           question.remove();
@@ -1148,7 +1376,7 @@
             .catch(error => console.error(`Error removing question from local storage: ${error}`));
         }
       }
-    
+
       updateQuestionCounts();
     }
     async function removeFromLocalStorage(questionUUID) {
