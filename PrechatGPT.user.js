@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PreChatGPT
 // @description  自动化批量的提交ChatGPT的提问
-// @version      1.5
+// @version      1.6
 // @author       zizhanovo
 // @namespace    https://github.com/zizhanovo/Pre-ChatGPT
 // @supportURL   https://github.com/xcanwin/KeepChatGPT/
@@ -20,7 +20,7 @@
       right: 0;
       top: 50%;
       transform: translateY(-50%);
-      width: 300px;
+      width: 270px;
       padding: 20px;
       background-color: #fafafa;
       border: 1px solid #ccc;
@@ -345,7 +345,7 @@
       right: 0;
       top: 50%;
       transform: translateY(-50%);
-      width: 300px;
+      width: 270px;
       padding: 20px;
       background-color: #fafafa;
       border: 1px solid #ccc;
@@ -408,7 +408,7 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       transition: border-color 0.3s;
-      width: 100px; /* 调整宽度为适当大小 */
+      width: 70px; /* 调整宽度为适当大小 */
       text-align: right; /* 将文本右对齐 */
     }
 
@@ -571,7 +571,186 @@
       background-color: #81a1c1;
     }
 
+
+
+    .my-app-night-mode #sidebar,
+    .my-app-night-mode #settingSidebar {
+      background-color: #1f1f1f;
+      border: 1px solid #444;
+    }
+    
+    .my-app-night-mode #sidebar textarea {
+      background-color: #1f1f1f;
+      color: #fff;
+    }
+    
+    .my-app-night-mode #toggleSidebar {
+      background: #d3d3d3; /* 浅灰色 */
+      border: 1px solid #444;
+      color: #ccc;
+    }
+    
+    .my-app-night-mode #toggleSidebar:hover {
+      border-color: #7eb8ff;
+      background: #bdbdbd; /* 浅灰色 */
+      color: #ccc;
+    }
+    
+    .my-app-night-mode #submitQuestion,
+    .my-app-night-mode #start {
+      background-color: #8CAF85;
+      color: #fff;
+    }
+    
+    .my-app-night-mode #submitQuestion:hover,
+    .my-app-night-mode #start:hover {
+      background-color: #7ba079;
+    }
+    
+    .my-app-night-mode .question {
+      background-color: #3f3f3f;
+      color: #fff;
+    }
+    
+    .my-app-night-mode .question:hover {
+      background-color: #2f2f2f;
+    }
+    
+    .my-app-night-mode .question.answered {
+      color: #aaa;
+    }
+    
+    .my-app-night-mode .button-container button {
+      border: 2px solid #ff4444;
+      color: #fff;
+    }
+    
+    .my-app-night-mode #questionSummary {
+      background-color: #3f3f3f;
+      color: #fff;
+    }
+    
+    .my-app-night-mode .summary-count {
+      color: #aaa;
+    }
+    
+    .my-app-night-mode .summary-item {
+      background-color: #3f3f3f;
+      border: 1px solid #444;
+      color: #fff;
+    }
+    
+    .my-app-night-mode .summary-action {
+      color: #888;
+    }
+    
+    .my-app-night-mode .summary-action svg {
+      fill: #bbb;
+    }
+    
+    .my-app-night-mode .summary-action:hover {
+      background-color: #2f2f2f;
+    }
+    
+    .my-app-night-mode #delayTime {
+      background-color: #333; /* 将延迟时间输入框的背景颜色改为深灰色 */
+      color: #ccc; /* 将延迟时间输入框的文字颜色改为浅灰色 */
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .my-app-night-mode .clear-cache-btn {
+      background-color: #68a0b0;
+      color: #fff;
+    }
+    
+    .my-app-night-mode .clear-cache-btn:hover {
+      background-color: #6189a1;
+    }
+    
+    .my-app-night-mode #openSetting,
+    .my-app-night-mode #backToMainSidebar {
+      color: #ccc; /* 使用浅灰色作为文字颜色 */
+    }
+    
+    .my-app-night-mode #openSetting:hover,
+    .my-app-night-mode #backToMainSidebar:hover {
+      color: #ddd; /* 使用浅灰色作为文字颜色 */
+    }
+    
+    .my-app-night-mode .dropdown {
+      border: 1px solid #555;
+    }
+    
+    .my-app-night-mode input[type="text"],
+    .my-app-night-mode input[type="number"],
+    .my-app-night-mode select {
+      background-color: #1f1f1f;
+      border: 1px solid #555;
+      color: #fff;
+    }
+    .my-app-night-mode .input-row label,
+    .my-app-night-mode .input-row input[type="text"],
+    .my-app-night-mode .input-row input[type="number"],
+    .my-app-night-mode .input-row select {
+      color: #f5f5f5; /* 设置文字颜色为浅色白色 */
+    }
+    
+    .my-app-night-mode input[type="text"]:focus,
+    .my-app-night-mode input[type="number"]:focus,
+    .my-app-night-mode select:focus {
+      border-color: #7eb8ff;
+      outline: none;
+    }
+    .my-app-night-mode .input-row {
+      color: gray;
+      background-color: black;
+    }
+    
+    .my-app-night-mode .button-container1 button {
+      background-color: #88c0d0;
+      color: #fff;
+    }
+    
+    .my-app-night-mode .button-container1 button:active {
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+      transform: translateY(3px);
+    }
+    
+    .my-app-night-mode .button-container1 button:hover {
+      background-color: #81a1c1;
+    }
+    
+    .my-app-night-mode .mode-option {
+      background-color: #1f1f1f;
+    }
+    
+    .my-app-night-mode .vertical-text {
+      color: #fff;
+    }
+    
+    .my-app-night-mode pre {
+      background-color: #1f1f1f;
+      color: #ddd;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    
+    .my-app-night-mode #deleteCompleted,
+    .my-app-night-mode #deletePending {
+      background-color: lightgray;
+    }
+    
+    .my-app-night-mode #runMode label {
+      color: lightgray;
+    }
+
+
+
   `);
+
+
+
   // 创建主侧边栏
   function createMainSidebar() {
     const sidebar = document.createElement('div');
@@ -636,19 +815,33 @@
     </section>
   `;
     document.body.appendChild(sidebar);
-
-    document.getElementById('toggleSidebar').addEventListener('click', toggleSidebar);
+    // Apply night mode class if the selected theme is "夜间模式"
+    const savedTheme = localStorage.getItem('selectedTheme') || 'light'; // Default to light mode
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('my-app-night-mode');
+    }
 
   }
 
+  // 创建设置侧边栏
   function createSettingSidebar() {
     const settingSidebar = document.createElement('div');
+
     settingSidebar.id = 'settingSidebar';
     settingSidebar.style.display = 'none'; // 初始时隐藏设置侧边栏
 
     settingSidebar.innerHTML = `
     <section id="sidebarContent">
       <h2 id="backToMainSidebar" style="cursor: pointer;">Pre ChatGPT</h2>
+      <div class="input-row">
+        <label for="themeSelect">主题选择：</label>
+        <select id="themeSelect" class="styled-select dropdown">
+          <option value="auto">跟随系统</option>
+          <option value="light">白天模式</option>
+          <option value="dark">夜间模式</option>
+        </select>
+       </div>
+    
     
       <div class="input-row">
         <label for="splitCharInput">拆分符号:</label>
@@ -662,7 +855,7 @@
           <div class="input-flex">
             <label for="depthSelect">深度：</label>
             <select id="depthSelect" class="dropdown" onchange="saveDropdownSettings()">
-              <option value="">请选择</option>
+              <option value="无">无</option>
               <option value="小学（1-6 年级）">小学（1-6 年级）</option>
               <option value="初中（7-9 年级）">初中（7-9 年级）</option>
               <option value="高中（10-12 年级）">高中（10-12 年级）</option>
@@ -679,19 +872,19 @@
           <div class="input-flex">
             <label for="inferenceSelect">推理：</label>
             <select id="inferenceSelect" class="dropdown" onchange="saveDropdownSettings()">
-              <option value="">请选择</option>
-              <option value="演绎法">演绎法</option>
-              <option value="归纳法">归纳法</option>
-              <option value="溯因法">溯因法</option>
-              <option value="类比法">类比法</option>
-              <option value="随意法">随意法</option>
+              <option value="无">无</option>
+              <option value="演绎法">演绎法：大前提推结论</option>
+              <option value="归纳法">归纳法：例子推规律</option>
+              <option value="溯因法">溯因法：追查事物原因</option>
+              <option value="类比法">类比法：相似推新情况</option>
+              <option value="随意法">随意法：无规则发挥</option>
             </select>
           </div>
     
           <div class="input-flex">
             <label for="styleSelect">风格：</label>
             <select id="styleSelect" class="dropdown" onchange="saveDropdownSettings()">
-              <option value="">请选择</option>
+              <option value="无">无</option>
               <option value="辩论">辩论</option>
               <option value="鼓励">鼓励</option>
               <option value="中立">中立</option>
@@ -724,6 +917,7 @@
       <div class="button-container1">
         <button class="clear-cache-btn">清空缓存</button>
       </div>
+
     </section>
     `;
 
@@ -737,47 +931,69 @@
     clearCacheBtn.addEventListener('click', clearCache);
 
   }
-
+  // 主侧边栏和设置侧边栏的创建代码
+  createMainSidebar();
+  createSettingSidebar();
 
   function loadDropdownSettings() {
     const depthSelect = document.getElementById('depthSelect');
     const inferenceSelect = document.getElementById('inferenceSelect');
     const styleSelect = document.getElementById('styleSelect');
+    const savedTheme = localStorage.getItem('selectedTheme') || "light";
+    const savedDepth = localStorage.getItem('selectedDepth') || "本科"; // 默认选择本科
+    const savedInference = localStorage.getItem('selectedInference') || "演绎法"; // 默认选择演绎法
+    const savedStyle = localStorage.getItem('selectedStyle') || "信息丰富"; // 默认选择信息丰富
 
-    const savedDepth = localStorage.getItem('selectedDepth');
-    const savedInference = localStorage.getItem('selectedInference');
-    const savedStyle = localStorage.getItem('selectedStyle');
+    const themeSelect = document.getElementById('themeSelect');
+    themeSelect.addEventListener('change', changeTheme);
 
-    if (savedDepth) {
-      depthSelect.value = savedDepth;
-    }
+    themeSelect.value = savedTheme;
+    depthSelect.value = savedDepth;
+    inferenceSelect.value = savedInference;
+    styleSelect.value = savedStyle;
 
-    if (savedInference) {
-      inferenceSelect.value = savedInference;
-    }
+    // Apply the selected theme and night mode class
+    applyTheme(savedTheme);
+  }
 
-    if (savedStyle) {
-      styleSelect.value = savedStyle;
+
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('my-app-night-mode');
+    } else {
+      document.documentElement.classList.remove('my-app-night-mode');
     }
   }
 
+  function changeTheme() {
+    const themeSelect = document.getElementById('themeSelect');
+    const selectedTheme = themeSelect.value;
+
+    applyTheme(selectedTheme);
+
+    // Save the selected theme to local storage
+    localStorage.setItem('selectedTheme', selectedTheme);
+  }
+
+
   function saveDropdownSettings() {
+    const themeSelect = document.getElementById('themeSelect');
     const depthSelect = document.getElementById('depthSelect');
     const inferenceSelect = document.getElementById('inferenceSelect');
     const styleSelect = document.getElementById('styleSelect');
 
+    const selectedTheme = themeSelect.value;
     const selectedDepth = depthSelect.value;
     const selectedInference = inferenceSelect.value;
     const selectedStyle = styleSelect.value;
 
+    localStorage.setItem('selectedTheme', selectedTheme);
     localStorage.setItem('selectedDepth', selectedDepth);
     localStorage.setItem('selectedInference', selectedInference);
     localStorage.setItem('selectedStyle', selectedStyle);
   }
 
-  // 主侧边栏和设置侧边栏的创建代码
-  createMainSidebar();
-  createSettingSidebar();
+
 
   document.getElementById('openSetting').addEventListener('click', function () {
     // 隐藏主侧边栏
@@ -809,12 +1025,14 @@
 
   document.getElementById('backToMainSidebar').addEventListener('click', function () {
     // 获取设置侧边栏中的字段值
+    const selectedTheme = document.getElementById('themeSelect').value;
     const splitChar = document.getElementById('splitCharInput').value;
     const additional = document.getElementById('additionalInput').value;
     const runMode = document.querySelector('input[name="mode"]:checked').value;
     const delayTime = document.getElementById('delayTime').value;
 
     // 保存设置到本地存储
+    localStorage.setItem('selectedTheme', selectedTheme);
     localStorage.setItem('splitChar', splitChar);
     localStorage.setItem('additional', additional);
     localStorage.setItem('runMode', runMode);
@@ -903,6 +1121,8 @@
         return v.toString(16);
       });
     }
+
+
 
 
     function handleQuestionSubmission() {
@@ -1136,33 +1356,50 @@
       document.getElementById('pendingCount').textContent = counts.unansweredCount;
     }
 
-
     async function startAskingQuestions() {
       try {
         const questions = Array.from(document.getElementsByClassName('question'));
         const runMode = localStorage.getItem('runMode');
         const delayTime = parseInt(localStorage.getItem('delayTime') || '300');
-    
+
         for (let i = 0; i < questions.length; i++) {
           const questionDiv = questions[i];
           const questionInput = questionDiv.querySelector('input.question-text');
           const questionUUID = questionDiv.dataset.id;
-    
+
           if (!questionDiv.classList.contains('answered')) {
             let questionText = questionInput.value; // 保存问题文本
-    
+
             // 获取下拉框的值
             const depthSelect = document.getElementById('depthSelect');
             const inferenceSelect = document.getElementById('inferenceSelect');
             const styleSelect = document.getElementById('styleSelect');
-    
-            const selectedDepth = depthSelect.options[depthSelect.selectedIndex].text; // 获取选中的文本
-            const selectedInference = inferenceSelect.options[inferenceSelect.selectedIndex].text; // 获取选中的文本
-            const selectedStyle = styleSelect.options[styleSelect.selectedIndex].text; // 获取选中的文本
-    
-            // 将下拉框的值拼接到问题文本中
-            questionText += ` 回答深度: ${selectedDepth}, 推理框架: ${selectedInference}, 回答风格: ${selectedStyle}`;
-    
+
+            const selectedDepth = depthSelect.value; // 获取选中的值
+            const selectedInference = inferenceSelect.value; // 获取选中的值
+            const selectedStyle = styleSelect.value; // 获取选中的值
+
+            const selectedValues = [];
+
+            // Check if the selected values are not "无", and add them to the selectedValues array
+            if (selectedDepth !== "无") {
+              selectedValues.push(`回答深度: ${selectedDepth}`);
+            }
+            if (selectedInference !== "无") {
+              selectedValues.push(`推理框架: ${selectedInference}`);
+            }
+            if (selectedStyle !== "无") {
+              selectedValues.push(`回答风格: ${selectedStyle}`);
+            }
+
+            // Join the selectedValues array with a space as a separator
+            const selectedText = selectedValues.join(' ');
+
+            // Append the selectedText to the questionText if it is not empty
+            if (selectedText) {
+              questionText += ` ${selectedText}`;
+            }
+
             if (runMode === 'instant') {
               console.log(`Asking question instantly: ${questionText}`);
               await askQuestionInstant(questionText);
@@ -1171,7 +1408,7 @@
               await delay(delayTime);
               await askQuestionDelayed(questionText);
             }
-    
+
             questionDiv.classList.add('answered');
             updateQuestionInLocalStorage(questionUUID, true);  // 更新问题状态为已回答
             console.log(`Question asked and marked as answered: ${questionText}`);
@@ -1183,7 +1420,7 @@
         console.error(`Error occurred while asking questions: ${err}`);
       }
     }
-    
+
 
 
     async function askQuestionInstant(question) {
