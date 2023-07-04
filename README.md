@@ -55,6 +55,5 @@
     ![](assets/eg.png)
 
 ### 交流
-![微信图片_20230704102846](https://github.com/zizhanovo/pitcure0_0/assets/132113115/d0989568-911f-4431-b2b1-5237d5e158e1)
-![微信图片_20230704102850](https://github.com/zizhanovo/pitcure0_0/assets/132113115/af8ec597-5473-412b-9f06-1123c5d2f184)
+![Snipaste_2023-07-04_22-08-15](https://github.com/zizhanovo/pitcure0_0/assets/132113115/cc0ab2af-19c2-4235-947a-8c529088badd)
 
