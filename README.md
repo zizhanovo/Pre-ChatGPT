@@ -1,11 +1,9 @@
-# Pre-ChatGPT
+### Pre-ChatGPT
 
 一款利用充分利用ChatGPT的插件
 
 油猴直达链接:https://greasyfork.org/en/scripts/466781-pre-chatgpt
 
-### 交流
- https://t.me/aitips66
 
 ### 插件的初衷
 
@@ -56,8 +54,7 @@
     
     ![](assets/eg.png)
 
-### 我的日常使用
+### 交流
+![微信图片_20230704102846](https://github.com/zizhanovo/pitcure0_0/assets/132113115/d0989568-911f-4431-b2b1-5237d5e158e1)
+![微信图片_20230704102850](https://github.com/zizhanovo/pitcure0_0/assets/132113115/af8ec597-5473-412b-9f06-1123c5d2f184)
 
-配合KeepChatGPT和ChatGPT开启不限次数的GPT4-Mobile使用
-https://greasyfork.org/en/scripts/467317-chatgpt%E5%BC%80%E5%90%AF%E4%B8%8D%E9%99%90%E6%AC%A1%E6%95%B0%E7%9A%84gpt4-mobile
-即时模式配合GPT4-Mobile，生产力的永动机！！！
