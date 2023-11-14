@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PreChatGPT
 // @description  自动化批量的提交ChatGPT的提问
-// @version      2.1
+// @version      2.2
 // @author       zizhanovo
 // @namespace    https://github.com/zizhanovo/Pre-ChatGPT
 // @supportURL   https://github.com/zizhanovo/Pre-ChatGPT
@@ -755,7 +755,37 @@
         content: "秒";
         margin-left: 5px;
       }
-  
+      .button-group {
+        display: flex;
+        flex-direction: row;
+        gap: 5px; /* 为按钮之间添加间隔 */
+      }
+      
+      #start {
+        display: block;
+        margin-top: 5px; /* 将运行按钮移至下一行 */
+      }
+
+      #stepRun {
+        background-color: #007BFF;
+        color: #fff;
+        font-size: 16px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s; /* Add transitions */
+      }
+    
+      #stepRun:hover {
+        background-color: #0056b3; /* Change background color on hover */
+      }
+    
+      #stepRun:active {
+        background-color: #00408c; /* Change background color when clicked */
+        transform: translateY(2px); /* Add a slight vertical shift when clicked */
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Add a shadow effect */
+      }
   
     `);
   
@@ -779,9 +809,13 @@
         <h2 id="openSetting" style="cursor: pointer;">PreChat 设置</h2>
         <textarea id="questionInput" placeholder="请输入您的提示词 , 可批量输入 , 默认 + 为拆分"></textarea>
         <div class="button-group">
-          <button id="submitQuestion">提交</button>
-          <button id="start">运行</button>
-        </div>
+        <button id="submitQuestion">提交</button>
+        <button id="stepRun">单步运行</button>
+      </div>
+      <div class="button-group">
+        <button id="start">自动运行</button>
+      </div>
+      
         <ul id="questionList"></ul>
         <div id="questionSummary" class="question-summary">
         <div class="summary-item">
@@ -1122,12 +1156,30 @@
       const submitQuestionButton = document.getElementById('submitQuestion');
       const questionInput = document.getElementById('questionInput');
       const startButton = document.getElementById('start');
-  
+
+
       // Event listeners
       submitQuestionButton.addEventListener('click', handleQuestionSubmission);
       questionList.addEventListener('click', handleQuestionClick);
       window.addEventListener('load', loadQuestionsFromLocalStorage);
       startButton.addEventListener('click', startAskingQuestions);
+      // 新增单步执行按钮的事件处理函数
+      document.getElementById('stepRun').addEventListener('click', function() {
+        startAskingQuestions(true); // 以单步模式运行函数
+      });
+
+      let isAutoRunMode = true; // 标志变量，表示当前为自动运行模式
+
+      // Event listeners
+      startButton.addEventListener('click', function () {
+        isAutoRunMode = true; // 设置为自动运行模式
+        startAskingQuestions();
+      });
+    
+      document.getElementById('stepRun').addEventListener('click', function () {
+        isAutoRunMode = false; // 设置为单步运行模式
+        startAskingQuestions();
+      });
   
       function generateUUID() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -1432,7 +1484,13 @@
           const delayTime = parseInt(localStorage.getItem('delayTime') || '300');
   
           for (let i = 0; i < questions.length; i++) {
+
             const questionDiv = questions[i];
+
+                  // 检查问题是否已经回答过
+            if (questionDiv.classList.contains('answered')) {
+              continue; // 如果已回答，跳过此问题
+            } 
             const questionInput = questionDiv.querySelector('textarea.question-text');
             const questionUUID = questionDiv.dataset.id;
   
@@ -1483,8 +1541,14 @@
               console.log(`Question asked and marked as answered: ${questionText}`);
               await new Promise(resolve => setTimeout(resolve, 500));
             }
+            // 如果处于单步运行模式，处理一个问题后退出循环
+            if (!isAutoRunMode) {
+              break;
+            }
           }
+          
           await updateQuestionCounts();
+     
         } catch (err) {
           console.error(`Error occurred while asking questions: ${err}`);
         }
