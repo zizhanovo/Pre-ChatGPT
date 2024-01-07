@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PreChatGPT
 // @description  自动化批量的提交ChatGPT的提问
-// @version      2.2
+// @version      2.3
 // @author       zizhanovo
 // @namespace    https://github.com/zizhanovo/Pre-ChatGPT
 // @supportURL   https://github.com/zizhanovo/Pre-ChatGPT
@@ -11,10 +11,10 @@
 // ==/UserScript==
 
 (function () {
-    'use strict';
-  
-    // 添加 CSS 样式
-    GM_addStyle(`
+  'use strict';
+
+  // 添加 CSS 样式
+  GM_addStyle(`
       #sidebar {
         position: fixed;
         right: 0;
@@ -788,15 +788,14 @@
       }
   
     `);
-  
-  
-  
-    // 创建主侧边栏
-    function createMainSidebar() {
-      const sidebar = document.createElement('div');
-      sidebar.id = 'sidebar';
-  
-      sidebar.innerHTML = `
+
+
+  // 创建主侧边栏
+  function createMainSidebar() {
+    const sidebar = document.createElement('div');
+    sidebar.id = 'sidebar';
+
+    sidebar.innerHTML = `
       <div id="toggleSidebar">
         <svg viewBox="0 0 24 24" id="icon-expand">
           <path d="M10 18h4v-2h-4v2zM3 13h18v-2H3v2zm0 7h12v-2H3v2zm0-14v2h18V6H3z"/>
@@ -858,23 +857,23 @@
   
       </section>
     `;
-      document.body.appendChild(sidebar);
-      // Apply night mode class if the selected theme is "夜间模式"
-      const savedTheme = localStorage.getItem('selectedTheme') || 'light'; // Default to light mode
-      if (savedTheme === 'dark') {
-        document.documentElement.classList.add('my-app-night-mode');
-      }
-  
+    document.body.appendChild(sidebar);
+    // Apply night mode class if the selected theme is "夜间模式"
+    const savedTheme = localStorage.getItem('selectedTheme') || 'light'; // Default to light mode
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('my-app-night-mode');
     }
-  
-    // 创建设置侧边栏
-    function createSettingSidebar() {
-      const settingSidebar = document.createElement('div');
-  
-      settingSidebar.id = 'settingSidebar';
-      settingSidebar.style.display = 'none'; // 初始时隐藏设置侧边栏
-  
-      settingSidebar.innerHTML = `
+
+  }
+
+  // 创建设置侧边栏
+  function createSettingSidebar() {
+    const settingSidebar = document.createElement('div');
+
+    settingSidebar.id = 'settingSidebar';
+    settingSidebar.style.display = 'none'; // 初始时隐藏设置侧边栏
+
+    settingSidebar.innerHTML = `
       <section id="sidebarContent">
         <h2 id="backToMainSidebar" style="cursor: pointer;">PreChat 保存</h2>
         <div class="input-row">
@@ -969,414 +968,426 @@
   
       </section>
       `;
-  
-      document.body.appendChild(settingSidebar);  // 将设置侧边栏添加到 DOM 中
-      // 在创建设置侧边栏的代码后添加以下代码
-      document.getElementById('depthSelect').addEventListener('change', saveDropdownSettings);
-      document.getElementById('inferenceSelect').addEventListener('change', saveDropdownSettings);
-      document.getElementById('styleSelect').addEventListener('change', saveDropdownSettings);
-  
-      const clearCacheBtn = document.querySelector('.clear-cache-btn');
-      clearCacheBtn.addEventListener('click', clearCache);
-  
-    }
-    // 主侧边栏和设置侧边栏的创建代码
-    createMainSidebar();
-    createSettingSidebar();
-  
-    function loadDropdownSettings() {
-      const depthSelect = document.getElementById('depthSelect');
-      const inferenceSelect = document.getElementById('inferenceSelect');
-      const styleSelect = document.getElementById('styleSelect');
-      const savedTheme = localStorage.getItem('selectedTheme') || "light";
-      const savedDepth = localStorage.getItem('selectedDepth') || "本科"; // 默认选择本科
-      const savedInference = localStorage.getItem('selectedInference') || "演绎法"; // 默认选择演绎法
-      const savedStyle = localStorage.getItem('selectedStyle') || "信息丰富"; // 默认选择信息丰富
-  
-      const themeSelect = document.getElementById('themeSelect');
-      themeSelect.addEventListener('change', changeTheme);
-  
-      themeSelect.value = savedTheme;
-      depthSelect.value = savedDepth;
-      inferenceSelect.value = savedInference;
-      styleSelect.value = savedStyle;
-  
-      // Apply the selected theme and night mode class
-      applyTheme(savedTheme);
-    }
-  
-  
-    function applyTheme(theme) {
-      if (theme === 'dark') {
-        document.documentElement.classList.add('my-app-night-mode');
-      } else {
-        document.documentElement.classList.remove('my-app-night-mode');
-      }
-    }
-  
-    function changeTheme() {
-      const themeSelect = document.getElementById('themeSelect');
-      const selectedTheme = themeSelect.value;
-  
-      applyTheme(selectedTheme);
-  
-      // Save the selected theme to local storage
-      localStorage.setItem('selectedTheme', selectedTheme);
-    }
-  
-  
-    function saveDropdownSettings() {
-      const themeSelect = document.getElementById('themeSelect');
-      const depthSelect = document.getElementById('depthSelect');
-      const inferenceSelect = document.getElementById('inferenceSelect');
-      const styleSelect = document.getElementById('styleSelect');
-  
-      const selectedTheme = themeSelect.value;
-      const selectedDepth = depthSelect.value;
-      const selectedInference = inferenceSelect.value;
-      const selectedStyle = styleSelect.value;
-  
-      localStorage.setItem('selectedTheme', selectedTheme);
-      localStorage.setItem('selectedDepth', selectedDepth);
-      localStorage.setItem('selectedInference', selectedInference);
-      localStorage.setItem('selectedStyle', selectedStyle);
-    }
-  
-  
-  
-    document.getElementById('openSetting').addEventListener('click', function () {
-      // 隐藏主侧边栏
-      document.getElementById('sidebar').style.display = 'none';
-  
-      // 显示设置侧边栏
-      document.getElementById('settingSidebar').style.display = '';
-  
-      // 加载下拉框设置
-      loadDropdownSettings();
-  
-      // 从本地存储加载设置
-      const splitChar = localStorage.getItem('splitChar');
-      const additional = localStorage.getItem('additional');
-      const runMode = localStorage.getItem('runMode');
-      const delayTime = localStorage.getItem('delayTime');
-  
-      // 更新设置侧边栏中的字段
-      document.getElementById('splitCharInput').value = splitChar || '';
-      document.getElementById('additionalInput').value = additional || '';
-      document.getElementById('delayTime').value = delayTime || '';
-  
-      if (runMode === 'instant') {
-        document.getElementById('instant').checked = true;
-      } else if (runMode === 'delayed') {
-        document.getElementById('delayed').checked = true;
-      }
-    });
-  
-    document.getElementById('backToMainSidebar').addEventListener('click', function () {
-      // 获取设置侧边栏中的字段值
-      const selectedTheme = document.getElementById('themeSelect').value;
-      const splitChar = document.getElementById('splitCharInput').value;
-      const additional = document.getElementById('additionalInput').value;
-      const runMode = document.querySelector('input[name="mode"]:checked').value;
-      const delayTime = document.getElementById('delayTime').value;
-  
-      // 保存设置到本地存储
-      localStorage.setItem('selectedTheme', selectedTheme);
-      localStorage.setItem('splitChar', splitChar);
-      localStorage.setItem('additional', additional);
-      localStorage.setItem('runMode', runMode);
-      localStorage.setItem('delayTime', delayTime);
-  
-      // 隐藏设置侧边栏
-      document.getElementById('settingSidebar').style.display = 'none';
-  
-      // 显示主侧边栏
-      document.getElementById('sidebar').style.display = '';
-    });
-  
-    // Event listener for run mode radio button inputs
-    const delayedRadio = document.getElementById('delayed');
-    const delayTimeInput = document.getElementById('delayTime');
-  
-    delayedRadio.addEventListener('change', function () {
-      delayTimeInput.disabled = false;
-    });
-  
-    const instantRadio = document.getElementById('instant');
-    instantRadio.addEventListener('change', function () {
-      delayTimeInput.disabled = true;
-    });
-  
-    function clearCache() {
-      var btn = document.querySelector('.clear-cache-btn');
-      if (typeof (Storage) !== "undefined") {
-        if (confirm("你确定要清空所有缓存的数据吗？")) {
-          try {
-            localStorage.clear();
-            console.log("缓存已清空!");
-            btn.innerText = "缓存已清空";
-            setTimeout(function () {
-              btn.innerText = "清空缓存";
-            }, 3000);  // 3秒后恢复原状
-          } catch (e) {
-            console.log("清空缓存失败，错误信息: ", e);
-          }
-        }
-      } else {
-        alert("抱歉，你的浏览器不支持 Web Storage...");
-      }
-    }
-  
-  
-    // Toggle logic
-    document.getElementById('toggleSidebar').addEventListener('click', function () {
-      var sidebar = document.getElementById('sidebar');
-      var iconExpand = document.getElementById('icon-expand');
-      var iconCollapse = document.getElementById('icon-collapse');
-      sidebar.classList.toggle('collapsed');
-      if (sidebar.classList.contains('collapsed')) {
-        iconCollapse.style.display = 'none';
-        iconExpand.style.display = '';
-      } else {
-        iconExpand.style.display = 'none';
-        iconCollapse.style.display = '';
-      }
-    });
-  
-  
-  
-  
-  
-  
-  
-  
-  
-    (function () {
-      const questionList = document.getElementById('questionList');
-      const submitQuestionButton = document.getElementById('submitQuestion');
-      const questionInput = document.getElementById('questionInput');
-      const startButton = document.getElementById('start');
+
+    document.body.appendChild(settingSidebar);  // 将设置侧边栏添加到 DOM 中
+    // 在创建设置侧边栏的代码后添加以下代码
+    document.getElementById('depthSelect').addEventListener('change', saveDropdownSettings);
+    document.getElementById('inferenceSelect').addEventListener('change', saveDropdownSettings);
+    document.getElementById('styleSelect').addEventListener('change', saveDropdownSettings);
+
+    const clearCacheBtn = document.querySelector('.clear-cache-btn');
+    clearCacheBtn.addEventListener('click', clearCache);
+
+  }
+  // 主侧边栏和设置侧边栏的创建代码
+  createMainSidebar();
+  createSettingSidebar();
+
+  function loadDropdownSettings() {
+    const depthSelect = document.getElementById('depthSelect');
+    const inferenceSelect = document.getElementById('inferenceSelect');
+    const styleSelect = document.getElementById('styleSelect');
+    const savedTheme = localStorage.getItem('selectedTheme') || "light";
+    const savedDepth = localStorage.getItem('selectedDepth') || "本科"; // 默认选择本科
+    const savedInference = localStorage.getItem('selectedInference') || "演绎法"; // 默认选择演绎法
+    const savedStyle = localStorage.getItem('selectedStyle') || "信息丰富"; // 默认选择信息丰富
+
+    const themeSelect = document.getElementById('themeSelect');
+    themeSelect.addEventListener('change', changeTheme);
+
+    themeSelect.value = savedTheme;
+    depthSelect.value = savedDepth;
+    inferenceSelect.value = savedInference;
+    styleSelect.value = savedStyle;
+
+    // Apply the selected theme and night mode class
+    applyTheme(savedTheme);
+  }
 
 
-      // Event listeners
-      submitQuestionButton.addEventListener('click', handleQuestionSubmission);
-      questionList.addEventListener('click', handleQuestionClick);
-      window.addEventListener('load', loadQuestionsFromLocalStorage);
-      startButton.addEventListener('click', startAskingQuestions);
-      // 新增单步执行按钮的事件处理函数
-      document.getElementById('stepRun').addEventListener('click', function() {
-        startAskingQuestions(true); // 以单步模式运行函数
-      });
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('my-app-night-mode');
+    } else {
+      document.documentElement.classList.remove('my-app-night-mode');
+    }
+  }
 
-      let isAutoRunMode = true; // 标志变量，表示当前为自动运行模式
+  function changeTheme() {
+    const themeSelect = document.getElementById('themeSelect');
+    const selectedTheme = themeSelect.value;
 
-      // Event listeners
-      startButton.addEventListener('click', function () {
-        isAutoRunMode = true; // 设置为自动运行模式
-        startAskingQuestions();
-      });
-    
-      document.getElementById('stepRun').addEventListener('click', function () {
-        isAutoRunMode = false; // 设置为单步运行模式
-        startAskingQuestions();
-      });
-  
-      function generateUUID() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-          var r = Math.random() * 16 | 0,
-            v = c == 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16);
-        });
-      }
-  
-  
-  
-  
-      function handleQuestionSubmission() {
-        const questions = getQuestionsFromInput();
-        if (questions.some(question => question.trim() === "")) {
-          return; // If any question is empty, return without executing further steps
-        }
-  
-        for (let question of questions) {
-          const uuid = generateUUID();  // Generate a unique ID for the question
-          addQuestionToList(question, false, uuid);  // Pass the answered state to addQuestionToList
-          addQuestionToLocalStorage(question, uuid);  // Pass the UUID to addQuestionToLocalStorage
-        }
-  
-        clearInput();
-        makeQuestionListSortable();
-        updateQuestionCounts();
-      }
-  
-  
-      function addQuestionToLocalStorage(question, uuid) {
+    applyTheme(selectedTheme);
+
+    // Save the selected theme to local storage
+    localStorage.setItem('selectedTheme', selectedTheme);
+  }
+
+
+  function saveDropdownSettings() {
+    const themeSelect = document.getElementById('themeSelect');
+    const depthSelect = document.getElementById('depthSelect');
+    const inferenceSelect = document.getElementById('inferenceSelect');
+    const styleSelect = document.getElementById('styleSelect');
+
+    const selectedTheme = themeSelect.value;
+    const selectedDepth = depthSelect.value;
+    const selectedInference = inferenceSelect.value;
+    const selectedStyle = styleSelect.value;
+
+    localStorage.setItem('selectedTheme', selectedTheme);
+    localStorage.setItem('selectedDepth', selectedDepth);
+    localStorage.setItem('selectedInference', selectedInference);
+    localStorage.setItem('selectedStyle', selectedStyle);
+  }
+
+
+
+  document.getElementById('openSetting').addEventListener('click', function () {
+    // 隐藏主侧边栏
+    document.getElementById('sidebar').style.display = 'none';
+
+    // 显示设置侧边栏
+    document.getElementById('settingSidebar').style.display = '';
+
+    // 加载下拉框设置
+    loadDropdownSettings();
+
+    // 从本地存储加载设置
+    const splitChar = localStorage.getItem('splitChar');
+    const additional = localStorage.getItem('additional');
+    const runMode = localStorage.getItem('runMode');
+    const delayTime = localStorage.getItem('delayTime');
+
+    // 更新设置侧边栏中的字段
+    document.getElementById('splitCharInput').value = splitChar || '';
+    document.getElementById('additionalInput').value = additional || '';
+    document.getElementById('delayTime').value = delayTime || '';
+
+    if (runMode === 'instant') {
+      document.getElementById('instant').checked = true;
+    } else if (runMode === 'delayed') {
+      document.getElementById('delayed').checked = true;
+    }
+  });
+
+  document.getElementById('backToMainSidebar').addEventListener('click', function () {
+    // 获取设置侧边栏中的字段值
+    const selectedTheme = document.getElementById('themeSelect').value;
+    const splitChar = document.getElementById('splitCharInput').value;
+    const additional = document.getElementById('additionalInput').value;
+    const runMode = document.querySelector('input[name="mode"]:checked').value;
+    const delayTime = document.getElementById('delayTime').value;
+
+    // 保存设置到本地存储
+    localStorage.setItem('selectedTheme', selectedTheme);
+    localStorage.setItem('splitChar', splitChar);
+    localStorage.setItem('additional', additional);
+    localStorage.setItem('runMode', runMode);
+    localStorage.setItem('delayTime', delayTime);
+
+    // 隐藏设置侧边栏
+    document.getElementById('settingSidebar').style.display = 'none';
+
+    // 显示主侧边栏
+    document.getElementById('sidebar').style.display = '';
+  });
+
+  // Event listener for run mode radio button inputs
+  const delayedRadio = document.getElementById('delayed');
+  const delayTimeInput = document.getElementById('delayTime');
+
+  delayedRadio.addEventListener('change', function () {
+    delayTimeInput.disabled = false;
+  });
+
+  const instantRadio = document.getElementById('instant');
+  instantRadio.addEventListener('change', function () {
+    delayTimeInput.disabled = true;
+  });
+
+  function clearCache() {
+    var btn = document.querySelector('.clear-cache-btn');
+    if (typeof (Storage) !== "undefined") {
+      if (confirm("你确定要清空所有缓存的数据吗？")) {
         try {
-          // Get the current list of questions from local storage
-          let storedQuestions = getQuestionsFromLocalStorage();
-  
-          // Check if getQuestionsFromLocalStorage returned a valid array
-          if (!Array.isArray(storedQuestions)) {
-            console.error('Failed to retrieve questions from local storage.');
-            return;
-          }
-  
-          // Add the new question to the list
-          storedQuestions.push({ id: uuid, text: question, answered: false });
-  
-          // Store the updated list back to local storage
-          localStorage.setItem('questions', JSON.stringify(storedQuestions));
-  
-          // Update question counts
-          updateQuestionCounts();
-  
-          console.log(`Question "${question}" with ID "${uuid}" added to local storage.`);
-        } catch (err) {
-          console.error(`Error adding question to local storage: ${err}`);
+          localStorage.clear();
+          console.log("缓存已清空!");
+          btn.innerText = "缓存已清空";
+          setTimeout(function () {
+            btn.innerText = "清空缓存";
+          }, 3000);  // 3秒后恢复原状
+        } catch (e) {
+          console.log("清空缓存失败，错误信息: ", e);
         }
       }
-  
-  
-      function handleQuestionClick(event) {
-        if (event.target.classList.contains('question-text')) {
-          toggleQuestionTextWhiteSpace(event.target);
-        }
+    } else {
+      alert("抱歉，你的浏览器不支持 Web Storage...");
+    }
+  }
+
+
+  // Toggle logic
+  document.getElementById('toggleSidebar').addEventListener('click', function () {
+    var sidebar = document.getElementById('sidebar');
+    var iconExpand = document.getElementById('icon-expand');
+    var iconCollapse = document.getElementById('icon-collapse');
+    sidebar.classList.toggle('collapsed');
+    if (sidebar.classList.contains('collapsed')) {
+      iconCollapse.style.display = 'none';
+      iconExpand.style.display = '';
+    } else {
+      iconExpand.style.display = 'none';
+      iconCollapse.style.display = '';
+    }
+  });
+
+
+
+
+
+
+
+
+
+  (function () {
+    const questionList = document.getElementById('questionList');
+    const submitQuestionButton = document.getElementById('submitQuestion');
+    const questionInput = document.getElementById('questionInput');
+    const startButton = document.getElementById('start');
+
+    let isRunning = false; // 标志变量，跟踪运行
+    let isAutoRunMode = true; // 标志变量，表示当前为自动运行模式
+    // Event listeners
+    submitQuestionButton.addEventListener('click', handleQuestionSubmission);
+    questionList.addEventListener('click', handleQuestionClick);
+    window.addEventListener('load', loadQuestionsFromLocalStorage);
+    startButton.addEventListener('click', startAskingQuestions);
+
+    startButton.addEventListener('click', function () {
+      isAutoRunMode = true; // 设置为自动运行模式
+      isRunning = !isRunning; // 切换运行状态
+      console.log(isRunning)
+      if (isRunning) {
+        startButton.textContent = '停止运行'; // 更新按钮文本为“停止运行”
+        startButton.style.backgroundColor = 'red';
+        startAskingQuestions(); // 启动自动提问的逻辑
+      } else {
+        startButton.textContent = '自动运行'; // 更新按钮文本为“自动运行”
+        startButton.style.backgroundColor = 'green';
+        // 这里可以添加停止运行的逻辑
       }
-  
-      // Helper functions
-      function getQuestionsFromInput() {
-        // 从本地存储获取拆分符号，如果没有设置，就使用默认的符号
-        const splitChar = localStorage.getItem('splitChar') || '+';
-        return questionInput.value.split(splitChar);
+    });
+
+    document.getElementById('stepRun').addEventListener('click', function () {
+      if (isRunning) {
+        alert('正在自动运行中，请先停止后再点击单步运行');
+      } else {
+        console.log("开启单步运行")
+        isRunning = true;
+        isAutoRunMode = false; // 设置为单步运行模式
+        startAskingQuestions(); // 以单步模式运行函数
+        console.log("单步运行已完成")
       }
-  
-  
-  
-      function addQuestionToList(question, answered, uuid) {
-  
-        if (question.trim() === "") {
-          return null; // Return null if question is empty
-        }
-        const questionDiv = createQuestionDiv(question, answered);
-        questionDiv.dataset.id = uuid;  // Store the UUID in the DOM element
-        questionList.appendChild(questionDiv);
-        if (answered) {
-          questionDiv.classList.add('answered');
-        }
-        updateQuestionCounts();
-        return questionDiv;
-      }
-  
-      function createQuestionDiv(question, answered) {
-        const div = document.createElement('div');
-        div.className = 'question';
-        div.draggable = true;
-  
-        const questionContainer = document.createElement('div');
-        questionContainer.style.display = "flex";
-        questionContainer.style.justifyContent = "center"; // Add this line to center the content vertically
-  
-        const questionText = document.createElement('textarea');
-        questionText.className = 'question-text';
-        questionText.value = question;
-        questionText.readOnly = true;
-        questionText.style.border = 'none';
-        questionText.style.height = '42px';
-        questionText.style.resize = 'none';
-        questionText.style.margin = 'auto'; // Add this line to center the textarea vertically
-        questionContainer.appendChild(questionText);
-        div.appendChild(questionContainer);
-  
-        const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'button-container';
-  
-        // const editButton = createButton('edit', handleEditButtonClick);
-        // buttonContainer.appendChild(editButton);
-  
-        const deleteButton = createButton('delete', handleDeleteButtonClick);
-        buttonContainer.appendChild(deleteButton);
-  
-        const sortButton = createButton('sort');
-        buttonContainer.appendChild(sortButton);
-  
-        div.appendChild(buttonContainer);
-        // Add 'answered' class if the question is answered
-        if (answered) {
-          div.classList.add('answered');
-        }
-        div.addEventListener('dragstart', function (e) {
-          e.dataTransfer.setData('text/plain', this.outerHTML); // 把元素的HTML设置为拖动的数据
-          this.classList.add('dragging'); // 添加一个类，让元素在拖动时看起来不同
-        });
-  
-        div.addEventListener('dragend', function () {
-          this.classList.remove('dragging'); // 当拖动结束时移除类
-        });
-  
-        return div;
-      }
-  
-  
-  
-      // 假设你的问题列表的id是'questionList'
-      const questionListDiv = document.getElementById('questionList');
-  
-      questionListDiv.addEventListener('dragover', function (e) {
-        e.preventDefault(); // 允许元素被放置
-  
-        const dragging = document.querySelector('.dragging');
-        const afterElement = getDragAfterElement(questionListDiv, e.clientY); // 获取在鼠标下方的元素
-        if (afterElement == null) {
-          questionListDiv.appendChild(dragging); // 如果没有元素在鼠标下方，就放在列表末尾
-        } else {
-          questionListDiv.insertBefore(dragging, afterElement); // 否则放在这个元素前面
-        }
+    });
+
+
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+          v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
       });
-  
-      function getDragAfterElement(container, y) {
-        const draggableElements = [...container.querySelectorAll('.question:not(.dragging)')]; // 获取所有可拖动的元素，除了正在被拖动的那个
-  
-        // 遍历元素，找到鼠标下方的元素
-        return draggableElements.reduce((closest, child) => {
-          const box = child.getBoundingClientRect();
-          const offset = y - box.top - box.height / 2;
-          if (offset < 0 && offset > closest.offset) {
-            return { offset: offset, element: child };
-          } else {
-            return closest;
-          }
-        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+
+
+
+    function handleQuestionSubmission() {
+      const questions = getQuestionsFromInput();
+      if (questions.some(question => question.trim() === "")) {
+        return; // If any question is empty, return without executing further steps
       }
-  
-  
-      function createButton(type, clickHandler) {
-        const button = document.createElement('button');
-        button.className = `${type}-button`;
-  
-        switch (type) {
-          // case 'edit':
-          //   button.innerHTML = `<svg t="1684557647867" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3766" width="20" height="20"><path d="M862.709333 116.042667a32 32 0 1 1 45.248 45.248L455.445333 613.813333a32 32 0 1 1-45.258666-45.258666L862.709333 116.053333zM853.333333 448a32 32 0 0 1 64 0v352c0 64.8-52.533333 117.333333-117.333333 117.333333H224c-64.8 0-117.333333-52.533333-117.333333-117.333333V224c0-64.8 52.533333-117.333333 117.333333-117.333333h341.333333a32 32 0 0 1 0 64H224a53.333333 53.333333 0 0 0-53.333333 53.333333v576a53.333333 53.333333 0 0 0 53.333333 53.333333h576a53.333333 53.333333 0 0 0 53.333333-53.333333V448z" fill="#000000" p-id="3767"></path></svg>`; // SVG for edit button
-          //   break;
-          case 'delete':
-            button.innerHTML = `<svg t="1684556652392" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2423" width="20" height="20"><path d="M202.666667 256h-42.666667a32 32 0 0 1 0-64h704a32 32 0 0 1 0 64H266.666667v565.333333a53.333333 53.333333 0 0 0 53.333333 53.333334h384a53.333333 53.333333 0 0 0 53.333333-53.333334V352a32 32 0 0 1 64 0v469.333333c0 64.8-52.533333 117.333333-117.333333 117.333334H320c-64.8 0-117.333333-52.533333-117.333333-117.333334V256z m224-106.666667a32 32 0 0 1 0-64h170.666666a32 32 0 0 1 0 64H426.666667z m-32 288a32 32 0 0 1 64 0v256a32 32 0 0 1-64 0V437.333333z m170.666666 0a32 32 0 0 1 64 0v256a32 32 0 0 1-64 0V437.333333z" fill="#000000" p-id="2424"></path></svg>`; // SVG for delete button
-            break;
-          case 'sort':
-            button.innerHTML = `<svg t="1684417162772" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6670" width="24" height="24"><path d="M368 706.72l-64 64V576h-64v194.72l-64-64L130.72 752 272 893.28 413.28 752 368 706.72zM272 130.72L130.72 272 176 317.28l64-64V448h64V253.28l64 64L413.28 272 272 130.72zM480 192h416v64H480zM480 384h416v64H480zM480 576h416v64H480zM480 768h416v64H480z" fill="#333333" p-id="6671"></path></svg>`; // SVG for sort button
-            break;
-        }
-  
-        if (clickHandler) {
-          button.addEventListener('click', clickHandler);
-        }
-  
-        return button;
+
+      for (let question of questions) {
+        const uuid = generateUUID();  // Generate a unique ID for the question
+        addQuestionToList(question, false, uuid);  // Pass the answered state to addQuestionToList
+        addQuestionToLocalStorage(question, uuid);  // Pass the UUID to addQuestionToLocalStorage
       }
-  
-  
+
+      clearInput();
+      makeQuestionListSortable();
+      updateQuestionCounts();
+    }
+
+
+    function addQuestionToLocalStorage(question, uuid) {
+      try {
+        // Get the current list of questions from local storage
+        let storedQuestions = getQuestionsFromLocalStorage();
+
+        // Check if getQuestionsFromLocalStorage returned a valid array
+        if (!Array.isArray(storedQuestions)) {
+          console.error('无法从本地存储检索到问题.');
+          return;
+        }
+
+        // Add the new question to the list
+        storedQuestions.push({ id: uuid, text: question, answered: false });
+
+        // Store the updated list back to local storage
+        localStorage.setItem('questions', JSON.stringify(storedQuestions));
+
+        // Update question counts
+        updateQuestionCounts();
+
+        console.log(`问题："${question}" 的ID "${uuid}" 添加到本地存储.`);
+      } catch (err) {
+        console.error(`将问题添加到本地存储时出错: ${err}`);
+      }
+    }
+
+
+    function handleQuestionClick(event) {
+      if (event.target.classList.contains('question-text')) {
+        toggleQuestionTextWhiteSpace(event.target);
+      }
+    }
+
+    // Helper functions
+    function getQuestionsFromInput() {
+      // 从本地存储获取拆分符号，如果没有设置，就使用默认的符号
+      const splitChar = localStorage.getItem('splitChar') || '+';
+      return questionInput.value.split(splitChar);
+    }
+
+
+
+    function addQuestionToList(question, answered, uuid) {
+
+      if (question.trim() === "") {
+        return null; // Return null if question is empty
+      }
+      const questionDiv = createQuestionDiv(question, answered);
+      questionDiv.dataset.id = uuid;  // Store the UUID in the DOM element
+      questionList.appendChild(questionDiv);
+      if (answered) {
+        questionDiv.classList.add('answered');
+      }
+      updateQuestionCounts();
+      return questionDiv;
+    }
+
+    function createQuestionDiv(question, answered) {
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.draggable = true;
+
+      const questionContainer = document.createElement('div');
+      questionContainer.style.display = "flex";
+      questionContainer.style.justifyContent = "center"; // Add this line to center the content vertically
+
+      const questionText = document.createElement('textarea');
+      questionText.className = 'question-text';
+      questionText.value = question;
+      questionText.readOnly = true;
+      questionText.style.border = 'none';
+      questionText.style.height = '42px';
+      questionText.style.resize = 'none';
+      questionText.style.margin = 'auto'; // Add this line to center the textarea vertically
+      questionContainer.appendChild(questionText);
+      div.appendChild(questionContainer);
+
+      const buttonContainer = document.createElement('div');
+      buttonContainer.className = 'button-container';
+
+      // const editButton = createButton('edit', handleEditButtonClick);
+      // buttonContainer.appendChild(editButton);
+
+      const deleteButton = createButton('delete', handleDeleteButtonClick);
+      buttonContainer.appendChild(deleteButton);
+
+      const sortButton = createButton('sort');
+      buttonContainer.appendChild(sortButton);
+
+      div.appendChild(buttonContainer);
+      // Add 'answered' class if the question is answered
+      if (answered) {
+        div.classList.add('answered');
+      }
+      div.addEventListener('dragstart', function (e) {
+        e.dataTransfer.setData('text/plain', this.outerHTML); // 把元素的HTML设置为拖动的数据
+        this.classList.add('dragging'); // 添加一个类，让元素在拖动时看起来不同
+      });
+
+      div.addEventListener('dragend', function () {
+        this.classList.remove('dragging'); // 当拖动结束时移除类
+      });
+
+      return div;
+    }
+
+
+
+    // 假设你的问题列表的id是'questionList'
+    const questionListDiv = document.getElementById('questionList');
+
+    questionListDiv.addEventListener('dragover', function (e) {
+      e.preventDefault(); // 允许元素被放置
+
+      const dragging = document.querySelector('.dragging');
+      const afterElement = getDragAfterElement(questionListDiv, e.clientY); // 获取在鼠标下方的元素
+      if (afterElement == null) {
+        questionListDiv.appendChild(dragging); // 如果没有元素在鼠标下方，就放在列表末尾
+      } else {
+        questionListDiv.insertBefore(dragging, afterElement); // 否则放在这个元素前面
+      }
+    });
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.question:not(.dragging)')]; // 获取所有可拖动的元素，除了正在被拖动的那个
+
+      // 遍历元素，找到鼠标下方的元素
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+
+    function createButton(type, clickHandler) {
+      const button = document.createElement('button');
+      button.className = `${type}-button`;
+
+      switch (type) {
+        // case 'edit':
+        //   button.innerHTML = `<svg t="1684557647867" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3766" width="20" height="20"><path d="M862.709333 116.042667a32 32 0 1 1 45.248 45.248L455.445333 613.813333a32 32 0 1 1-45.258666-45.258666L862.709333 116.053333zM853.333333 448a32 32 0 0 1 64 0v352c0 64.8-52.533333 117.333333-117.333333 117.333333H224c-64.8 0-117.333333-52.533333-117.333333-117.333333V224c0-64.8 52.533333-117.333333 117.333333-117.333333h341.333333a32 32 0 0 1 0 64H224a53.333333 53.333333 0 0 0-53.333333 53.333333v576a53.333333 53.333333 0 0 0 53.333333 53.333333h576a53.333333 53.333333 0 0 0 53.333333-53.333333V448z" fill="#000000" p-id="3767"></path></svg>`; // SVG for edit button
+        //   break;
+        case 'delete':
+          button.innerHTML = `<svg t="1684556652392" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2423" width="20" height="20"><path d="M202.666667 256h-42.666667a32 32 0 0 1 0-64h704a32 32 0 0 1 0 64H266.666667v565.333333a53.333333 53.333333 0 0 0 53.333333 53.333334h384a53.333333 53.333333 0 0 0 53.333333-53.333334V352a32 32 0 0 1 64 0v469.333333c0 64.8-52.533333 117.333333-117.333333 117.333334H320c-64.8 0-117.333333-52.533333-117.333333-117.333334V256z m224-106.666667a32 32 0 0 1 0-64h170.666666a32 32 0 0 1 0 64H426.666667z m-32 288a32 32 0 0 1 64 0v256a32 32 0 0 1-64 0V437.333333z m170.666666 0a32 32 0 0 1 64 0v256a32 32 0 0 1-64 0V437.333333z" fill="#000000" p-id="2424"></path></svg>`; // SVG for delete button
+          break;
+        case 'sort':
+          button.innerHTML = `<svg t="1684417162772" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6670" width="24" height="24"><path d="M368 706.72l-64 64V576h-64v194.72l-64-64L130.72 752 272 893.28 413.28 752 368 706.72zM272 130.72L130.72 272 176 317.28l64-64V448h64V253.28l64 64L413.28 272 272 130.72zM480 192h416v64H480zM480 384h416v64H480zM480 576h416v64H480zM480 768h416v64H480z" fill="#333333" p-id="6671"></path></svg>`; // SVG for sort button
+          break;
+      }
+
+      if (clickHandler) {
+        button.addEventListener('click', clickHandler);
+      }
+
+      return button;
+    }
+
+
     //   function handleEditButtonClick(event) {
     //     const questionText = event.target.parentElement.previousElementSibling;
     //     const isEditing = questionText.getAttribute('data-isEditing') === 'true';
-  
+
     //     if (!isEditing) {  // If it's not in editing state
     //         questionText.setAttribute('contentEditable', 'true');
     //         questionText.style.border = '1px solid';
@@ -1388,322 +1399,365 @@
     //         questionText.style.border = 'none';
     //         questionText.style.backgroundColor = 'transparent';
     //         questionText.removeAttribute('data-isEditing');  // Remove the attribute
-  
+
     //         // Update the corresponding question in localStorage
     //         const storedQuestions = JSON.parse(localStorage.getItem('questions') || '[]');
     //         const questionToUpdate = storedQuestions.find(q => q.text === questionText.textContent);
-  
+
     //         if (questionToUpdate) {
     //             questionToUpdate.text = questionText.textContent;
     //             localStorage.setItem('questions', JSON.stringify(storedQuestions));
     //         }
     //     }
     // }
-  
-  
-      function handleDeleteButtonClick(event) {
-        // Use the closest method to get the question div
-        const questionDiv = event.target.closest('.question');
-  
-        const questionText = questionDiv.querySelector('input.question-text');
-        const questionUuid = questionDiv.dataset.id;  // Get the UUID from the DOM element
-  
-        // Remove the question from the DOM
-        questionDiv.remove();
-        updateQuestionCounts();
-  
-        // Remove the question from localStorage
-        let storedQuestions = getQuestionsFromLocalStorage();  // We can use this helper function here
-        storedQuestions = storedQuestions.filter(q => q.id !== questionUuid);  // Use the UUID to filter the question
-        localStorage.setItem('questions', JSON.stringify(storedQuestions));
-        updateQuestionCounts();
-      }
-  
-      function clearInput() {
-        questionInput.value = '';
-      }
-  
-      function makeQuestionListSortable() {
-        new Sortable(questionList, {
-          handle: '.sort-button',
-          animation: 150
-        });
-      }
-  
-      function toggleQuestionTextWhiteSpace(questionText) {
-        questionText.style.whiteSpace = questionText.style.whiteSpace === 'nowrap' ? 'normal' : 'nowrap';
-      }
-  
-      function loadQuestionsFromLocalStorage() {
-        try {
-          const storedQuestions = getQuestionsFromLocalStorage();
-          for (let question of storedQuestions) {
-            let questionDiv = addQuestionToList(question.text, question.answered, question.id);
-            if (question.answered) {
-              questionDiv.classList.add('answered');
-            }
-          }
-          updateQuestionCounts();
-          console.log(`Loaded ${storedQuestions.length} questions from local storage.`);
-        } catch (err) {
-          console.error(`Error loading questions from local storage: ${err}`);
-        }
-      }
-  
-      function getQuestionsFromLocalStorage() {
-        try {
-          let storedQuestions = localStorage.getItem('questions');
-          storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
-  
-          // Map raw objects from local storage to question objects with custom methods
-          storedQuestions = storedQuestions.map((rawQuestion) => ({
-            id: rawQuestion.id,
-            text: rawQuestion.text,
-            answered: rawQuestion.answered
-          }));
-  
-          console.log(`Retrieved ${storedQuestions.length} questions from local storage.`);
-          return storedQuestions;
-        } catch (err) {
-          console.error(`Error retrieving questions from local storage: ${err}`);
-          return []; // Return an empty array if there was an error
-        }
-      }
-  
-  
-      function updateQuestionCounts() {
-        const counts = getQuestionCounts();
-        document.getElementById('completedCount').textContent = counts.answeredCount;
-        document.getElementById('pendingCount').textContent = counts.unansweredCount;
-      }
-  
-      async function startAskingQuestions() {
-        try {
-          const questions = Array.from(document.getElementsByClassName('question'));
-          const runMode = localStorage.getItem('runMode');
-          const delayTime = parseInt(localStorage.getItem('delayTime') || '300');
-  
-          for (let i = 0; i < questions.length; i++) {
 
-            const questionDiv = questions[i];
 
-                  // 检查问题是否已经回答过
-            if (questionDiv.classList.contains('answered')) {
-              continue; // 如果已回答，跳过此问题
-            } 
-            const questionInput = questionDiv.querySelector('textarea.question-text');
-            const questionUUID = questionDiv.dataset.id;
-  
-            if (!questionDiv.classList.contains('answered')) {
-              let questionText = questionInput.value; // 保存问题文本
-  
-              // 获取下拉框的值
-              const depthSelect = document.getElementById('depthSelect');
-              const inferenceSelect = document.getElementById('inferenceSelect');
-              const styleSelect = document.getElementById('styleSelect');
-  
-              const selectedDepth = depthSelect.value; // 获取选中的值
-              const selectedInference = inferenceSelect.value; // 获取选中的值
-              const selectedStyle = styleSelect.value; // 获取选中的值
-  
-              const selectedValues = [];
-  
-              // Check if the selected values are not "无", and add them to the selectedValues array
-              if (selectedDepth !== "无") {
-                selectedValues.push(`回答深度: ${selectedDepth}`);
-              }
-              if (selectedInference !== "无") {
-                selectedValues.push(`推理框架: ${selectedInference}`);
-              }
-              if (selectedStyle !== "无") {
-                selectedValues.push(`回答风格: ${selectedStyle}`);
-              }
-  
-              // Join the selectedValues array with a space as a separator
-              const selectedText = selectedValues.join(' ');
-  
-              // Append the selectedText to the questionText if it is not empty
-              if (selectedText) {
-                questionText += ` ${selectedText}`;
-              }
-  
-              if (runMode === 'instant') {
-                console.log(`Asking question instantly: ${questionText}`);
-                await askQuestionInstant(questionText);
-              } else if (runMode === 'delayed') {
-                console.log(`Delaying for ${delayTime}ms before asking question: ${questionText}`);
-                await delay(delayTime);
-                await askQuestionDelayed(questionText);
-              }
-  
-              questionDiv.classList.add('answered');
-              updateQuestionInLocalStorage(questionUUID, true);  // 更新问题状态为已回答
-              console.log(`Question asked and marked as answered: ${questionText}`);
-              await new Promise(resolve => setTimeout(resolve, 500));
-            }
-            // 如果处于单步运行模式，处理一个问题后退出循环
-            if (!isAutoRunMode) {
-              break;
-            }
-          }
-          
-          await updateQuestionCounts();
-     
-        } catch (err) {
-          console.error(`Error occurred while asking questions: ${err}`);
-        }
-      }
-  
-  
-  
-      async function askQuestionInstant(question) {
-        return new Promise((resolve, reject) => {
-            try {
-                const additional = localStorage.getItem('additional') || '';
-                const questionToSend = `${question} ${additional}`.trim();
-                const inputBox = document.querySelector('textarea');
-                if (!inputBox) {
-                    reject('Could not find textarea for input.');
-                }
-                inputBox.value = questionToSend;
-                const event = new Event('input', { bubbles: true });
-                inputBox.dispatchEvent(event);
-    
-                const interval = setInterval(() => {
-                    const sendButton = inputBox.nextElementSibling;
-                    if (sendButton && !sendButton.disabled) {
-                        sendButton.click();
-                    } else {
-                        clearInterval(interval);
-                        resolve();
-                    }
-                }, 1000); // 每秒检查一次发送按钮是否可点击
-            } catch (err) {
-                console.error(`Error occurred while asking question: ${err}`);
-                reject(err);
-            }
-        });
+    function handleDeleteButtonClick(event) {
+      // Use the closest method to get the question div
+      const questionDiv = event.target.closest('.question');
+
+      const questionText = questionDiv.querySelector('input.question-text');
+      const questionUuid = questionDiv.dataset.id;  // Get the UUID from the DOM element
+
+      // Remove the question from the DOM
+      questionDiv.remove();
+      updateQuestionCounts();
+
+      // Remove the question from localStorage
+      let storedQuestions = getQuestionsFromLocalStorage();  // We can use this helper function here
+      storedQuestions = storedQuestions.filter(q => q.id !== questionUuid);  // Use the UUID to filter the question
+      localStorage.setItem('questions', JSON.stringify(storedQuestions));
+      updateQuestionCounts();
     }
-    
-    
-  
-  
-      function askQuestionDelayed(question) {
-        return new Promise((resolve, reject) => {
-          try {
-            if (!question) {
-              console.error("No question provided");
-              reject('No question provided');
-              return;
-            }
-  
-            const additional = localStorage.getItem('additional') || '';
-            const questionToSend = `${question} ${additional}`.trim();
-            const inputBox = document.querySelector('textarea');
-  
-            if (!inputBox) {
-              console.error("Input box not found");
-              reject('Input box not found');
-              return;
-            }
-  
-            inputBox.value = questionToSend;
-            const event = new Event('input', { bubbles: true });
-            inputBox.dispatchEvent(event);
-  
-            const sendButton = inputBox.nextElementSibling;
-  
-            if (!sendButton) {
-              console.error("Send button not found");
-              reject('Send button not found');
-              return;
-            }
-  
-            const delayTime = parseInt(localStorage.getItem('delayTime'), 10);
-  
-            if (isNaN(delayTime)) {
-              console.error("Invalid delayTime");
-              reject('Invalid delayTime');
-              return;
-            }
-  
-            // Delay for delayTime (ms) then click the button and resolve
-            setTimeout(() => {
-              console.log(`Question sent after delay of ${delayTime} ms`);
-              sendButton.click();
-              resolve();
-            }, delayTime * 1000);
-  
-          } catch (error) {
-            console.error(`Error in askQuestionDelayed: ${error}`);
-            reject(error);
+
+    function clearInput() {
+      questionInput.value = '';
+    }
+
+    function makeQuestionListSortable() {
+      new Sortable(questionList, {
+        handle: '.sort-button',
+        animation: 150
+      });
+    }
+
+    function toggleQuestionTextWhiteSpace(questionText) {
+      questionText.style.whiteSpace = questionText.style.whiteSpace === 'nowrap' ? 'normal' : 'nowrap';
+    }
+
+    function loadQuestionsFromLocalStorage() {
+      try {
+        const storedQuestions = getQuestionsFromLocalStorage();
+        for (let question of storedQuestions) {
+          let questionDiv = addQuestionToList(question.text, question.answered, question.id);
+          if (question.answered) {
+            questionDiv.classList.add('answered');
           }
-        });
+        }
+        updateQuestionCounts();
+        console.log(`从本地存储加载了${storedQuestions.length}个问题.`);
+      } catch (err) {
+        console.error(`从本地存储加载问题时出现错误：${err}`);
       }
-  
-  
-  
-  
-      function updateQuestionInLocalStorage(questionUUID, answered) {
-        try {
-          let storedQuestions = getQuestionsFromLocalStorage();
-          let questionToUpdate = storedQuestions.find(q => q.id === questionUUID);
-  
-          // Check if questionToUpdate is found
-          if (!questionToUpdate) {
-            console.error(`Question with UUID ${questionUUID} not found in local storage.`);
-            return false;
+    }
+
+    function getQuestionsFromLocalStorage() {
+      try {
+        let storedQuestions = localStorage.getItem('questions');
+        storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
+
+        // Map raw objects from local storage to question objects with custom methods
+        storedQuestions = storedQuestions.map((rawQuestion) => ({
+          id: rawQuestion.id,
+          text: rawQuestion.text,
+          answered: rawQuestion.answered
+        }));
+
+        
+        return storedQuestions;
+      } catch (err) {
+        console.error(`从本地存储检索问题时出错: ${err}`);
+        return []; // Return an empty array if there was an error
+      }
+    }
+
+
+    function updateQuestionCounts() {
+      const counts = getQuestionCounts();
+      document.getElementById('completedCount').textContent = counts.answeredCount;
+      document.getElementById('pendingCount').textContent = counts.unansweredCount;
+    }
+
+    async function startAskingQuestions() {
+      try {
+        const questions = Array.from(document.getElementsByClassName('question'));
+        const runMode = localStorage.getItem('runMode');
+        const delayTime = parseInt(localStorage.getItem('delayTime') || '300');
+
+        let allAnswered = true; // 初始假设所有问题都已回答
+
+        for (let i = 0; i < questions.length; i++) {
+
+          let allAnswered = true; // 初始假设所有问题都已回答
+          if (!isRunning) {
+            console.log(`isRunning的状态为：${isRunning}`);
+            allAnswered = false; // 如果停止，表示不是所有问题都已回答
+            break; // 如果运行状态被设置为 false，则退出循环
           }
-  
-          console.log('Updating question:', questionToUpdate);
-  
-          // Update the answered status of the question
-          questionToUpdate.answered = answered;
-  
-          // Update the question list in local storage
-          localStorage.setItem('questions', JSON.stringify(storedQuestions));
-  
-          console.log(`Question with UUID ${questionUUID} updated successfully.`);
-  
-          // Return true on successful update
-          return true;
+
+          const questionDiv = questions[i];
+          if (questionDiv.classList.contains('answered')) {
+            continue; // 如果已回答，跳过此问题
+          } else {
+            allAnswered = false; // 存在未回答的问题
+          }
+          const questionInput = questionDiv.querySelector('textarea.question-text');
+          const questionUUID = questionDiv.dataset.id;
+
+          if (!questionDiv.classList.contains('answered')) {
+            let questionText = questionInput.value; // 保存问题文本
+
+            // 获取下拉框的值
+            const depthSelect = document.getElementById('depthSelect');
+            const inferenceSelect = document.getElementById('inferenceSelect');
+            const styleSelect = document.getElementById('styleSelect');
+
+            const selectedDepth = depthSelect.value; // 获取选中的值
+            const selectedInference = inferenceSelect.value; // 获取选中的值
+            const selectedStyle = styleSelect.value; // 获取选中的值
+
+            const selectedValues = [];
+
+            // Check if the selected values are not "无", and add them to the selectedValues array
+            if (selectedDepth !== "无") {
+              selectedValues.push(`回答深度: ${selectedDepth}`);
+            }
+            if (selectedInference !== "无") {
+              selectedValues.push(`推理框架: ${selectedInference}`);
+            }
+            if (selectedStyle !== "无") {
+              selectedValues.push(`回答风格: ${selectedStyle}`);
+            }
+
+            // Join the selectedValues array with a space as a separator
+            const selectedText = selectedValues.join(' ');
+
+            // Append the selectedText to the questionText if it is not empty
+            if (selectedText) {
+              questionText += ` ${selectedText}`;
+            }
+
+            if (runMode === 'instant') {
+              console.log(`立即提问模式：${questionText}`);
+              await askQuestionInstant(questionText);
+            } else if (runMode === 'delayed') {
+              console.log(`在提问问题 ${questionText} 前延迟 ${delayTime} 秒`);
+              await delay(delayTime);
+              await askQuestionDelayed(questionText);
+            }
+
+            questionDiv.classList.add('answered');
+            updateQuestionInLocalStorage(questionUUID, true);  // 更新问题状态为已回答
+            console.log(`问题已提交并标记为已回答: ${questionText}`);
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await updateQuestionCounts();
+          }
+
+          // 如果处于单步运行模式，处理一个问题后退出循环
+          if (!isAutoRunMode) {
+            break;
+          }
+        }
+        
+        await updateQuestionCounts();
+        if (allAnswered) {
+          // 如果所有问题都已回答
+          isRunning = false;
+          startButton.textContent = '自动运行'; // 更新按钮文本为“自动运行”
+          startButton.style.backgroundColor = 'green';
+          console.log("问题已经回答完毕.");
+        }
+
+      } catch (err) {
+        console.error(`在提问时发生错误: ${err}`);
+        isRunning = false; // 在发生错误时停止运行
+      }
+    }
+
+
+
+    async function askQuestionInstant(question) {
+      return new Promise((resolve, reject) => {
+        try {
+
+          const additional = localStorage.getItem('additional') || '';
+          const questionToSend = `${question} ${additional}`.trim();
+          const inputBox = document.querySelector('textarea');
+          if (!inputBox) {
+            reject('Could not find textarea for input.');
+          }
+          inputBox.value = questionToSend;
+          const event = new Event('input', { bubbles: true });
+          inputBox.dispatchEvent(event);
+
+          const interval = setInterval(() => {
+            if (!isRunning) {
+              clearInterval(interval);
+              reject('Stopped by user');
+              console.log("instant")
+              return;
+            }
+            const sendButton = inputBox.nextElementSibling;
+            if (sendButton && !sendButton.disabled) {
+              sendButton.click();
+            } else {
+              clearInterval(interval);
+              resolve();
+            }
+          }, 1000); // 每秒检查一次发送按钮是否可点击
+        } catch (err) {
+          console.error(`在提问时发生错误: ${err}`);
+          reject(err);
+        }
+      });
+    }
+
+
+
+
+    function askQuestionDelayed(question) {
+      return new Promise((resolve, reject) => {
+        try {
+          if (!question) {
+            console.error("No question provided");
+            reject('No question provided');
+            return;
+          }
+
+          const additional = localStorage.getItem('additional') || '';
+          const questionToSend = `${question} ${additional}`.trim();
+          const inputBox = document.querySelector('textarea');
+
+          if (!inputBox) {
+            console.error("Input box not found");
+            reject('Input box not found');
+            return;
+          }
+
+          inputBox.value = questionToSend;
+          const event = new Event('input', { bubbles: true });
+          inputBox.dispatchEvent(event);
+
+          const sendButton = inputBox.nextElementSibling;
+
+          if (!sendButton) {
+            console.error("发送按钮没找到");
+            reject('Send button not found');
+            return;
+          }
+
+          const delayTime = parseInt(localStorage.getItem('delayTime'), 10);
+
+          if (isNaN(delayTime)) {
+            console.error("Invalid delayTime");
+            reject('Invalid delayTime');
+            return;
+          }
+
+          // Delay for delayTime (ms) then click the button and resolve
+          setTimeout(() => {
+            console.log(`Question sent after delay of ${delayTime} ms`);
+            sendButton.click();
+            resolve();
+          }, delayTime * 1000);
+
         } catch (error) {
-          console.error(`Error in updateQuestionInLocalStorage: ${error}`);
+          console.error(`Error in askQuestionDelayed: ${error}`);
+          reject(error);
+        }
+      });
+    }
+
+
+
+
+    function updateQuestionInLocalStorage(questionUUID, answered) {
+      try {
+        let storedQuestions = getQuestionsFromLocalStorage();
+        let questionToUpdate = storedQuestions.find(q => q.id === questionUUID);
+
+        // Check if questionToUpdate is found
+        if (!questionToUpdate) {
+          console.error(`Question with UUID ${questionUUID} not found in local storage.`);
           return false;
         }
+
+        console.log('更新内存中:', questionToUpdate);
+
+        // Update the answered status of the question
+        questionToUpdate.answered = answered;
+
+        // Update the question list in local storage
+        localStorage.setItem('questions', JSON.stringify(storedQuestions));
+
+        console.log(`问题状态已成功更新，UUID为${questionUUID}.`);
+
+        // Return true on successful update
+        return true;
+      } catch (error) {
+        console.error(`Error in updateQuestionInLocalStorage: ${error}`);
+        return false;
       }
-  
-  
-  
-  
-      function delay(ms) {
-        return new Promise((resolve, reject) => {
-          setTimeout(resolve, ms);
-        });
-      }
-  
-      function getQuestionCounts() {
-        let storedQuestions = getQuestionsFromLocalStorage();
-        let answeredCount = 0;
-        let unansweredCount = 0;
-  
-        for (let question of storedQuestions) {
-          if (question.answered) {
-            answeredCount++;
-          } else {
-            unansweredCount++;
-          }
+    }
+
+
+
+
+    function delay(ms) {
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, ms);
+      });
+    }
+
+    function getQuestionCounts() {
+      let storedQuestions = getQuestionsFromLocalStorage();
+      let answeredCount = 0;
+      let unansweredCount = 0;
+
+      for (let question of storedQuestions) {
+        if (question.answered) {
+          answeredCount++;
+        } else {
+          unansweredCount++;
         }
-  
-        return {
-          answeredCount,
-          unansweredCount
-        };
       }
-  
-      async function deleteCompletedQuestions() {
-        let questions = document.querySelectorAll('.question.answered');
-  
+
+      return {
+        answeredCount,
+        unansweredCount
+      };
+    }
+
+    async function deleteCompletedQuestions() {
+      let questions = document.querySelectorAll('.question.answered');
+
+      for (let question of questions) {
+        let questionUUID = question.dataset.id;
+        question.remove();
+        await removeFromLocalStorage(questionUUID)
+          .then(questionUUID => console.log(`Question with UUID ${questionUUID} removed from local storage.`))
+          .catch(error => console.error(`Error removing question from local storage: ${error}`));
+      }
+
+      updateQuestionCounts();
+    }
+
+    async function deletePendingQuestions() {
+      let confirmation = confirm('你确定要删除所有未完成的问题吗？');
+
+      if (confirmation) {
+        let questions = document.querySelectorAll('.question:not(.answered)');
+
         for (let question of questions) {
           let questionUUID = question.dataset.id;
           question.remove();
@@ -1711,48 +1765,31 @@
             .then(questionUUID => console.log(`Question with UUID ${questionUUID} removed from local storage.`))
             .catch(error => console.error(`Error removing question from local storage: ${error}`));
         }
-  
-        updateQuestionCounts();
       }
-  
-      async function deletePendingQuestions() {
-        let confirmation = confirm('你确定要删除所有未完成的问题吗？');
-  
-        if (confirmation) {
-          let questions = document.querySelectorAll('.question:not(.answered)');
-  
-          for (let question of questions) {
-            let questionUUID = question.dataset.id;
-            question.remove();
-            await removeFromLocalStorage(questionUUID)
-              .then(questionUUID => console.log(`Question with UUID ${questionUUID} removed from local storage.`))
-              .catch(error => console.error(`Error removing question from local storage: ${error}`));
-          }
-        }
-  
-        updateQuestionCounts();
-      }
-      async function removeFromLocalStorage(questionUUID) {
-        return new Promise((resolve, reject) => {
-          let storedQuestions = localStorage.getItem('questions');
-          storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
-          storedQuestions = storedQuestions.filter(q => q.id !== questionUUID);
-          localStorage.setItem('questions', JSON.stringify(storedQuestions));
-          resolve(questionUUID); // 修改此处将questionUUID传递给resolve
-        });
-      }
-  
-      document.getElementById('deleteCompleted').addEventListener('click', deleteCompletedQuestions);
-      document.getElementById('deletePending').addEventListener('click', deletePendingQuestions);
-    })();
-  })();
-  
-  
-  function toggleInput(radio) {
-    var delayTimeInput = document.getElementById("delayTime");
-    delayTimeInput.disabled = !radio.checked;
-    if (radio.checked) {
-      delayTimeInput.focus();
-      delayTimeInput.select();
+
+      updateQuestionCounts();
     }
+    async function removeFromLocalStorage(questionUUID) {
+      return new Promise((resolve, reject) => {
+        let storedQuestions = localStorage.getItem('questions');
+        storedQuestions = storedQuestions ? JSON.parse(storedQuestions) : [];
+        storedQuestions = storedQuestions.filter(q => q.id !== questionUUID);
+        localStorage.setItem('questions', JSON.stringify(storedQuestions));
+        resolve(questionUUID); // 修改此处将questionUUID传递给resolve
+      });
+    }
+
+    document.getElementById('deleteCompleted').addEventListener('click', deleteCompletedQuestions);
+    document.getElementById('deletePending').addEventListener('click', deletePendingQuestions);
+  })();
+})();
+
+
+function toggleInput(radio) {
+  var delayTimeInput = document.getElementById("delayTime");
+  delayTimeInput.disabled = !radio.checked;
+  if (radio.checked) {
+    delayTimeInput.focus();
+    delayTimeInput.select();
   }
+}
