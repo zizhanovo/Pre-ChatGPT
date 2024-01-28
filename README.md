@@ -1,3 +1,20 @@
+<br><br>
+
+<center><div align="center">
+
+<img src="/assets/PreChatGPT.png" width="750"></img>
+
+<br>
+<img alt="Greasy Fork Version" src="https://img.shields.io/greasyfork/v/466781?style=flat&label=%E7%89%88%E6%9C%AC&logo=velog&logoColor=BE95FF&color=7B68EE">
+<img alt="Greasy Fork Downloads" src="https://img.shields.io/greasyfork/dt/466781?style=flat&label=%E7%94%A8%E6%88%B7%E5%AE%89%E8%A3%85%E9%87%8F&logo=bilibili&logoColor=78FF96">
+<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/zizhanovo/Pre-ChatGPT?style=flat&label=Stars&logo=undertale&logoColor=red&color=orange">
+<img alt="GitHub forks" src="https://img.shields.io/github/forks/zizhanovo/Pre-ChatGPT?style=flat&label=Forks&logo=stackshare&logoColor=green&color=0AC18E">
+</div></center>
+
+<br>
+
+
+
 # 插件简介
 
 ### 插件界面：
