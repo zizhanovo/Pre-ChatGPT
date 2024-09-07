@@ -1,17 +1,16 @@
 // ==UserScript==
 // @name         PreChatGPT - ChatGPT批量提问自动化工具
 // @description  使用PreChatGPT来自动化您与ChatGPT的对话。支持批量提交问题，并逐个输入到ChatGPT进行询问，以节省时间并提高会话效率。
-// @version      3.6
+// @version      3.8
 // @author       zizhanovo
 // @namespace    https://github.com/zizhanovo/Pre-ChatGPT
 // @supportURL   https://github.com/zizhanovo/Pre-ChatGPT
 // @license      GPL-2.0-only
-// @match        *://chat.openai.com
-// @match        *://chat.openai.com/*
+// @match        *://chatgpt.com
+// @match        *://chatgpt.com/*
 // @grant        GM_addStyle
 // @icon         data:image/svg+xml;utf8,%3Csvg t="1706424916374" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="16099" width="48" height="48"%3E%3Cpath d="M851.2 172.8C664.32-14.08 359.68-14.08 172.16 172.8c-186.88 186.88-186.88 491.52 0 679.04A483.52 483.52 0 0 0 512 992c122.88 0 245.76-46.72 339.2-140.16 90.88-90.88 140.8-211.2 140.8-339.2 0-128.64-49.92-249.6-140.8-339.84z m-90.24 588.16a352.448 352.448 0 0 1-497.92 0c-136.96-136.96-136.96-360.32 0-497.92a352.448 352.448 0 0 1 497.92 0A349.44 349.44 0 0 1 864 512c0 94.08-36.48 182.4-103.04 248.96z" fill="%23020202" p-id="16100"%3E%3C/path%3E%3Cpath d="M497.28 256c-2.56 0-4.48 1.28-5.76 3.84L348.8 555.52c-1.28 1.92-0.64 4.48 0.64 6.4 0.64 1.28 3.2 2.56 5.12 2.56h101.76l-24.32 196.48c-0.64 3.2 1.28 5.76 3.84 7.04h2.56c1.92 0 3.84-0.64 5.12-2.56l209.92-300.16c1.28-1.92 1.28-4.48 0.64-6.4a6.72 6.72 0 0 0-5.76-3.2h-89.6l115.84-189.44a5.76 5.76 0 0 0 0-6.4c-0.64-2.56-3.2-3.84-5.12-3.84H497.28z" fill="%23020202" p-id="16101"%3E%3C/path%3E%3C/svg%3E
 // ==/UserScript==
-
 
 (function () {
   "use strict";
@@ -95,31 +94,31 @@
       fill: #757575;
     }
     .my-app-night-mode .button-container button {
-      background-color: #45a049; 
-      color: white; 
-      border: 1px solid #39843c; 
+      background-color: #45a049;
+      color: white;
+      border: 1px solid #39843c;
     }
     .my-app-night-mode .button-container button:hover {
-      background-color: #39843c; 
-      color: #ddd; 
+      background-color: #39843c;
+      color: #ddd;
     }
   .my-app-night-mode .summary-action {
-    display: inline-flex; 
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: #45a049; 
-    color: white; 
-    border: 1px solid #39843c; 
-    padding: 5px; 
-    border-radius: 4px; 
-    text-decoration: none; 
+    background-color: #45a049;
+    color: white;
+    border: 1px solid #39843c;
+    padding: 5px;
+    border-radius: 4px;
+    text-decoration: none;
   }
   .my-app-night-mode .summary-action:hover {
-    background-color: #39843c; 
-    color: #ddd; 
+    background-color: #39843c;
+    color: #ddd;
   }
   .my-app-night-mode .summary-action svg {
-    fill: white; 
+    fill: white;
   }
     .button-container button {
       height: 40px;
@@ -863,7 +862,7 @@
           <!-- 输出增强 -->
           <div class="input-row">
             <label for="additionalInput">输出增强:</label>
-            <textarea id="additionalInput" placeholder="例如，零样本提示（请一步步思考），少样本提示（提供输出案例），思维链（提供思考过程）等"></textarea>
+            <textarea id="additionalInput" placeholder="例如，零样本提示（请一步步思考），少样本提示（提供输出案例），思维链/树（提供思考过程）等"></textarea>
           </div>
           <!-- 运行模式 -->
           <div class="input-row">
@@ -889,6 +888,7 @@
       const clearCacheBtn = document.querySelector(".clear-cache-btn");
       clearCacheBtn.addEventListener("click", Utils.clearCache);
     },
+
     createButton: function (type, clickHandler) {
       const button = document.createElement("button");
       button.className = `${type}-button`;
@@ -921,6 +921,7 @@
         feedbackBar.style.display = "none";
       }, displayDuration);
     },
+
     createQuestionDiv: function (question, answered) {
       const div = document.createElement("div");
       div.className = "question";
@@ -982,13 +983,23 @@
       }
     },
     clearInput: function () {
+      // 清除原始输入框的内容
       const input = document.getElementById("questionInput");
       if (input) {
         input.value = "";
       } else {
         UIManager.showFeedback("Input element not found", "error");
       }
+
+      // 清除文本区域的内容
+      const textarea = document.getElementById("prompt-textarea");
+      if (textarea) {
+        textarea.value = "";
+      } else {
+        UIManager.showFeedback("Prompt textarea element not found", "error");
+      }
     },
+
     updateQuestionCounts: function () {
       const counts = DataManager.getQuestionCounts();
       document.getElementById("completedCount").textContent =
@@ -1290,29 +1301,30 @@
   // 事件处理模块
   const EventHandler = {
     // 处理问题提交
-    handleQuestionSubmission: function () {
-      try {
-        const questionInput = document.getElementById("questionInput");
-        if (!questionInput) {
-          UIManager.showFeedback("Question input element not found", "error");
-          return;
+      // 处理问题提交
+      handleQuestionSubmission: function () {
+        try {
+          const questionInput = document.getElementById("questionInput");
+          if (!questionInput) {
+            UIManager.showFeedback("Question input element not found", "error");
+            return;
+          }
+          const questions = DataManager.getQuestionsFromInput(questionInput);
+          if (questions.length === 0) {
+            UIManager.showFeedback("没有问题输入");
+            return;
+          }
+          questions.forEach((question) => {
+            const uuid = Utils.generateUUID();
+            UIManager.addQuestionToList(question, false, uuid);
+            DataManager.addQuestion(question, uuid); // 修改方法名
+          });
+          UIManager.clearInput();
+          UIManager.updateQuestionCounts();
+        } catch (error) {
+          console.error("处理问题提交时出错:", error);
         }
-        const questions = DataManager.getQuestionsFromInput(questionInput);
-        if (questions.length === 0) {
-          UIManager.showFeedback("没有问题输入");
-          return;
-        }
-        questions.forEach((question) => {
-          const uuid = Utils.generateUUID();
-          UIManager.addQuestionToList(question, false, uuid);
-          DataManager.addQuestion(question, uuid); // 修改方法名
-        });
-        UIManager.clearInput();
-        UIManager.updateQuestionCounts();
-      } catch (error) {
-        console.error("处理问题提交时出错:", error);
-      }
-    },
+      },
     // 处理问题点击事件
     handleQuestionClick: function (event) {
       if (event.target.classList.contains("question-text")) {
@@ -1388,6 +1400,8 @@
     document
       .getElementById("toggleSidebar")
       .addEventListener("click", UIManager.toggleSidebar);
+
+
     // 绑定增强输入文本区域的自动调整大小事件
     const textarea = document.getElementById("additionalInput");
     if (textarea) {
@@ -1463,6 +1477,29 @@
         }
       });
 
+    // 绑定发送按钮的点击事件
+    const sendButton = document.querySelector('[data-testid="send-button"]');
+
+    if (sendButton) {
+      sendButton.addEventListener("click", function (event) {
+        event.preventDefault(); // 阻止按钮的默认行为
+        console.log("发送按钮被点击");
+        EventHandler.handleQuestionSubmission();
+      });
+    }
+    
+    // 绑定文本输入框的键盘事件
+    const inputBox = document.querySelector("#prompt-textarea"); // 替换为实际的选择器
+    if (inputBox) {
+      inputBox.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault(); // 阻止默认的Enter行为
+          console.log("按下了Enter键");
+          EventHandler.handleQuestionSubmission();
+        }
+      });
+    }
+
     // 可以在此处继续添加其他事件绑定...
   }
   // 提问逻辑模块
@@ -1475,14 +1512,11 @@
           this.isRunning = true;
           this.updateStartButton();
         }
-        const questions = Array.from(
-          document.getElementsByClassName("question")
-        );
+        const questions = Array.from(document.getElementsByClassName("question"));
         const unansweredQuestions = questions.filter(
           (question) => !question.classList.contains("answered")
         );
         if (unansweredQuestions.length === 0) {
-          // 如果没有未回答的问题，显示通知并返回
           UIManager.showFeedback("没有未回答的问题", "error");
           if (isSingleStep) {
             this.isRunning = false;
@@ -1505,18 +1539,13 @@
           const questionDiv = questions[i];
           if (questionDiv.classList.contains("answered")) {
             continue;
-          } else {
           }
-          const questionInput = questionDiv.querySelector(
-            "textarea.question-text"
-          );
+          const questionInput = questionDiv.querySelector("textarea.question-text");
           const questionUUID = questionDiv.dataset.id;
           if (!questionDiv.classList.contains("answered")) {
             let questionText = questionInput.value;
-            const fullText = Utils.replaceEnhancementSymbol(
-              enhancementText,
-              questionText
-            );
+            const fullText = Utils.replaceEnhancementSymbol(enhancementText, questionText);
+            console.log(`Question text before sending: ${fullText}`); // Debugging statement
             if (runMode === "instant") {
               console.log(`立即提问模式：${fullText}`);
               await Utils.delay(400);
@@ -1529,20 +1558,18 @@
             questionDiv.classList.add("answered");
             DataManager.updateQuestionInLocalStorage(questionUUID, true);
             console.log(`问题已提交并标记为已回答: ${questionText}`);
-            UIManager.showFeedback("问题已提交并标记为已回答", success);
+            UIManager.showFeedback("问题已提交并标记为已回答", "success");
             await new Promise((resolve) => setTimeout(resolve, 1000));
             UIManager.updateQuestionCounts();
           }
           if (isSingleStep) {
-            // 如果是单步运行，执行一次后设置 isRunning 为 false
             this.isRunning = false;
             this.updateStartButton();
-            console.log("单步提问开始，问题：" + fullText); // 添加调试信息
-            UIManager.updateQuestionCounts(); // 确保在这里更新统计栏
-            UIManager.showFeedback("单步运行完成", "success"); // 提供成功的反馈
-            break; // 退出循环
+            console.log("单步提问开始，问题：" + fullText);
+            UIManager.updateQuestionCounts();
+            UIManager.showFeedback("单步运行完成", "success");
+            break;
           }
-          // 如果不是单步运行，更新统计栏
           if (!isSingleStep) {
             UIManager.updateQuestionCounts();
           }
@@ -1550,7 +1577,7 @@
         UIManager.updateQuestionCounts();
         if (allAnswered) {
           this.isRunning = false;
-          this.updateStartButton(); // 更新按钮状态
+          this.updateStartButton();
           startButton.textContent = "自动运行";
           startButton.style.backgroundColor = "#4752C4";
           console.log("问题已经回答完毕.");
@@ -1560,47 +1587,8 @@
         this.isRunning = false;
       }
     },
-    // 模拟键盘输入的函数
-    simulateKeyboardInput: function (element, text, callback) {
-      if (!element) {
-        console.error("simulateKeyboardInput: No element provided");
-        return;
-      }
 
-      element.focus(); // 确保元素获得焦点
 
-      // 逐个字符模拟键入
-      Array.from(text).forEach((char, index) => {
-        setTimeout(() => {
-          // 创建并触发一个键盘事件
-          const event = new KeyboardEvent("keydown", {
-            key: char,
-            keyCode: char.charCodeAt(0),
-            which: char.charCodeAt(0),
-          });
-          element.dispatchEvent(event);
-
-          // 实际修改元素的内容（对于一些特殊的网站可能需要其他方法）
-          if (
-            element.tagName.toLowerCase() === "input" ||
-            element.tagName.toLowerCase() === "textarea"
-          ) {
-            element.value += char; // 对于常规输入框和文本区域
-          } else {
-            element.textContent += char; // 对于内容可编辑的元素
-          }
-        }, index * 100); // 每个字符之间添加延迟
-      });
-
-      // 输入完成后的操作
-      const textLength = text.length;
-      setTimeout(() => {
-        if (typeof callback === "function") {
-          callback(); // 执行回调函数，如点击发送按钮
-        }
-        element.blur(); // 完成后移除焦点
-      }, textLength * 100 + 500); // 在最后一个字符输入后等待一段时间再执行后续操作
-    },
     hasUnansweredQuestions: function () {
       const questions = Array.from(document.getElementsByClassName("question"));
       return questions.some(
@@ -1625,33 +1613,36 @@
           if (!inputBox) {
             reject("Could not find textarea for input.");
           }
+          console.log(`Setting input value: ${question}`); // Debugging statement
           inputBox.value = question;
           const event = new Event("input", { bubbles: true });
           inputBox.dispatchEvent(event);
+          console.log(`Input value after event dispatch: ${inputBox.value}`); // Debugging statement
           const interval = setInterval(async () => {
             if (!this.isRunning) {
               clearInterval(interval);
               reject("Stopped by user");
               return;
             }
-            const sendButton = document.querySelector(
-              '[data-testid="send-button"]'
-            );
-
-            if (sendButton && !sendButton.hasAttribute("disable")) {
-              clearInterval(interval);
-              sendButton.click();
-              await Utils.delay(5000);
-              await this.waitForResponseCompletion();
-              resolve();
+            const sendButton = document.querySelector('[data-testid="send-button"]');
+            if (sendButton) {
+              sendButton.disabled = false; // Ensure the button is enabled
+              if (!sendButton.hasAttribute("disabled")) {
+                clearInterval(interval);
+                sendButton.click();
+                await Utils.delay(5000);
+                await this.waitForResponseCompletion();
+                resolve();
+              }
             }
           }, 1000);
         } catch (err) {
-          console.error(`在提问时发生错误: ${err}`);
+          console.error(`Error while asking question: ${err}`);
           reject(err);
         }
       });
     },
+
     askQuestionDelayed: function (question) {
       return new Promise((resolve, reject) => {
         try {
@@ -1721,7 +1712,7 @@
             consistentCount = 0;
           }
           lastChar = currentLastChar;
-        }, 500);
+        }, 100);
       });
     },
   };
@@ -1805,11 +1796,11 @@
     // 创建主边栏和设置边栏
     UIManager.createMainSidebar();
     UIManager.createSettingSidebar();
-    // 绑定事件监听器
-    bindEventHandlers();
+    // 页面加载完成后，进行事件绑定
+    window.addEventListener("load", function () {
+      bindEventHandlers();
+    });
     SettingsManager.bindThemeSwitch();
-    // // 绑定运行模式开关
-    // SettingsManager.bindRunModeSwitch();
     // 加载设置
     SettingsManager.loadSettings();
     // 加载本地存储中的问题
@@ -1843,7 +1834,7 @@
       if (deleteButton.getAttribute("data-ready-to-delete") === "true") {
         revertToOriginalSVG();
       }
-    }, 3000);
+    }, 1000);
   }
   // 用于恢复原始 SVG 的函数
   function revertToOriginalSVG(deleteButton) {
